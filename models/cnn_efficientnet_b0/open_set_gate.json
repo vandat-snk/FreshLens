@@ -1,0 +1,22 @@
+{
+  "version": "1.1-external-calibration",
+  "purpose": "supported-vs-unsupported gate; CNN weights unchanged",
+  "checkpoint_sha256": "134c2555f7b018012565886e54f7a30e99dd4c07b00284b9b57c37e1d50f9bf4",
+  "checkpoint_epoch": 9,
+  "supported_fruits": [
+    "apple",
+    "banana",
+    "orange",
+    "tomato"
+  ],
+  "calibration_source": "E:\\VanDat_\\XuLyAnh\\FreshLens_external_test_v2",
+  "known_total_images": 81,
+  "prototype_images": 60,
+  "known_calibration_images": 21,
+  "unknown_calibration_images": 22,
+  "chosen_threshold": 0.700972028801349,
+  "known_calibration_accept_rate": 0.9047619047619048,
+  "unknown_calibration_reject_rate": 1.0,
+  "known_validation_accept_rate": 0.9047619047619048,
+  "important_note": "The external V2 set had already been evaluated before this calibration. From this point it is calibration data, not a future untouched test set."
+}

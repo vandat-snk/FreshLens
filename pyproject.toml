@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freshlens"
+version = "1.0.0"
+description = "FreshLens - nhận dạng bốn loại quả và tình trạng tươi/hỏng bằng xử lý ảnh"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+

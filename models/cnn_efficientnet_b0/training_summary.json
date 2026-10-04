@@ -1,0 +1,262 @@
+{
+  "status": "completed",
+  "completed_epochs": 15,
+  "best_epoch": 9,
+  "best_validation": {
+    "images": 1187,
+    "groups": 958,
+    "joint": {
+      "accuracy": 0.991575400168492,
+      "macro_f1": 0.9912518438451434,
+      "balanced_accuracy": 0.9910176881854833,
+      "confusion_matrix": [
+        [
+          185,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          170,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          126,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          163,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          152,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          148,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          118,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          2,
+          115
+        ]
+      ],
+      "per_class": {
+        "apple::fresh": {
+          "precision": 0.9893048128342246,
+          "recall": 1.0,
+          "f1": 0.9946236559139785,
+          "support": 185
+        },
+        "apple::rotten": {
+          "precision": 0.9941520467836257,
+          "recall": 0.9883720930232558,
+          "f1": 0.9912536443148688,
+          "support": 172
+        },
+        "banana::fresh": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 126
+        },
+        "banana::rotten": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 163
+        },
+        "orange::fresh": {
+          "precision": 0.9806451612903225,
+          "recall": 0.9934640522875817,
+          "f1": 0.987012987012987,
+          "support": 153
+        },
+        "orange::rotten": {
+          "precision": 0.9932885906040269,
+          "recall": 0.9801324503311258,
+          "f1": 0.9866666666666667,
+          "support": 151
+        },
+        "tomato::fresh": {
+          "precision": 0.9752066115702479,
+          "recall": 0.9915966386554622,
+          "f1": 0.9833333333333333,
+          "support": 119
+        },
+        "tomato::rotten": {
+          "precision": 1.0,
+          "recall": 0.9745762711864406,
+          "f1": 0.9871244635193133,
+          "support": 118
+        }
+      }
+    },
+    "fruit": {
+      "accuracy": 0.9966301600673968,
+      "macro_f1": 0.9965430568513494,
+      "balanced_accuracy": 0.9963676468255523,
+      "confusion_matrix": [
+        [
+          356,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          289,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          303,
+          1
+        ],
+        [
+          2,
+          0,
+          0,
+          235
+        ]
+      ],
+      "per_class": {
+        "apple": {
+          "precision": 0.994413407821229,
+          "recall": 0.9971988795518207,
+          "f1": 0.9958041958041958,
+          "support": 357
+        },
+        "banana": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 289
+        },
+        "orange": {
+          "precision": 0.9967105263157895,
+          "recall": 0.9967105263157895,
+          "f1": 0.9967105263157895,
+          "support": 304
+        },
+        "tomato": {
+          "precision": 0.9957627118644068,
+          "recall": 0.9915611814345991,
+          "f1": 0.9936575052854123,
+          "support": 237
+        }
+      }
+    },
+    "condition": {
+      "accuracy": 0.9949452401010952,
+      "macro_f1": 0.9949444327713197,
+      "balanced_accuracy": 0.9950331125827814,
+      "confusion_matrix": [
+        [
+          583,
+          0
+        ],
+        [
+          6,
+          598
+        ]
+      ],
+      "per_class": {
+        "fresh": {
+          "precision": 0.9898132427843803,
+          "recall": 1.0,
+          "f1": 0.9948805460750854,
+          "support": 583
+        },
+        "rotten": {
+          "precision": 1.0,
+          "recall": 0.9900662251655629,
+          "f1": 0.9950083194675541,
+          "support": 604
+        }
+      }
+    },
+    "condition_when_fruit_correct": {
+      "images": 1183,
+      "accuracy": 0.9949281487743026
+    },
+    "mean_group_joint_accuracy": 0.9906054279749478,
+    "raw_8_class_argmax_accuracy": 0.991575400168492,
+    "definitions": {
+      "joint": "Both fruit and condition must be correct under the deployed prediction rule.",
+      "condition": "Condition prediction after selecting a fruit; includes cases where fruit is wrong.",
+      "mean_group_joint_accuracy": "Average of per-group image accuracies, equal weight per declared group."
+    },
+    "loss": 0.3037515507089861,
+    "loss_label_smoothing": 0.05
+  },
+  "test_evaluated": false,
+  "model_selection_split": "val",
+  "dataset_identity": {
+    "manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+    "report_sha256": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+    "split_counts": {
+      "val": 1187,
+      "test": 1163,
+      "train": 3519
+    },
+    "new_groups": 4786,
+    "physical_specimen_independence_confirmed": false
+  },
+  "run_seconds_this_session": 2945.425446,
+  "pretrained_initialization": true,
+  "best_model_sha256": "134c2555f7b018012565886e54f7a30e99dd4c07b00284b9b57c37e1d50f9bf4",
+  "stop_reason": "early_stopping"
+}

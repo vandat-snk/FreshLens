@@ -1,0 +1,25 @@
+{
+  "dataset_root": "E:\\VanDat_\\XuLyAnh\\FreshLens_Pro\\FreshLens\\dataset",
+  "dataset_dir": "E:\\VanDat_\\XuLyAnh\\FreshLens_complete_v2\\FreshLens\\data\\cnn_dataset_v3",
+  "batch_size": 8,
+  "accumulation": 2,
+  "warmup_epochs": 3,
+  "finetune_epochs": 20,
+  "patience": 6,
+  "seed": 42,
+  "workers": 0,
+  "label_smoothing": 0.05,
+  "pretrained": true,
+  "device": "cuda",
+  "dataset_identity": {
+    "manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+    "report_sha256": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+    "split_counts": {
+      "val": 1187,
+      "test": 1163,
+      "train": 3519
+    },
+    "new_groups": 4786,
+    "physical_specimen_independence_confirmed": false
+  }
+}

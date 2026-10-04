@@ -1,0 +1,64 @@
+{
+  "package_version": "3.0.0",
+  "purpose": "Fine-tune EfficientNet-B0 on the locked FreshLens v3 dataset.",
+  "qa_date_utc": "2026-10-04",
+  "status": "passed",
+  "automated_tests_passed": 10,
+  "test_scope": "Linux CPU; synthetic images for training/evaluation and reconstructed metadata matching the supplied final report.",
+  "environment": {
+    "torch": "2.10.0+cpu",
+    "torchvision": "0.25.0+cpu",
+    "numpy": "2.3.5",
+    "Pillow": "11.3.0",
+    "scikit-learn": "1.8.0",
+    "matplotlib": "3.10.8",
+    "python": "3.12.14"
+  },
+  "checks": {
+    "cpu_only": true,
+    "synthetic_images_only": true,
+    "pretrained_weights_download_and_load": true,
+    "warmup_and_finetune_parameter_updates_correct": true,
+    "batchnorm_stats_frozen": true,
+    "train_succeeds_with_all_test_image_files_absent": true,
+    "resume_after_finetune_epoch_exact_cpu_weights_match": true,
+    "full_split_evaluation_and_prediction_cli": true,
+    "actual_fruit_accuracy_measured": false
+  },
+  "additional_checks": [
+    "Reject altered manifest/report hashes, cross-split groups/content hashes, unsafe paths, and changed image bytes.",
+    "Deterministic EXIF/RGB/white-letterbox evaluation preprocessing; alpha composites on white.",
+    "Shared fruit-marginal then conditional-state decoder for metrics and uploaded-photo prediction.",
+    "Safe weights_only checkpoint loading; reject incompatible class order/preprocessing/decision rule.",
+    "Partial accumulation windows match larger batches numerically.",
+    "Actual 5869-row v3 manifest was deterministically reconstructed from previous metadata and matches the uploaded report SHA-256.",
+    "Actual dataset photo files were not available locally; no real-data training or accuracy measurement performed.",
+    "The original user dataset_lock.json was not uploaded; reconstruction used a derived QA-only lock.",
+    "History/confusion plots rendered and visually checked for readability."
+  ],
+  "not_tested_here": [
+    "Windows CMD execution",
+    "Python 3.13 execution",
+    "CUDA/AMP execution on RTX 2050",
+    "Accuracy on user fruit photos",
+    "Camera/upload UI integration"
+  ],
+  "recommended_install": {
+    "torch": "2.10.0",
+    "torchvision": "0.25.0",
+    "index_url": "https://download.pytorch.org/whl/cu128"
+  },
+  "real_dataset_manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+  "file_sha256": {
+    "CAI_CNN_GPU.cmd": "b2ab2e09bebd1cc84d0d7d6585054c464a3339e38cf73e1ad76c46038d0982a7",
+    "CHECK_GPU.py": "a2ffa5a950920988ae3b4db7159fcf00861e61d7177e243044036436fd4f777e",
+    "EVALUATE_CNN.py": "8738fc39dd02661bde35b405fbf7b60b808aafd7bb73d5f3319b7f7d526a00b9",
+    "HUONG_DAN.md": "062e6e3df126027f972025f50abc9c4bf4c495f0f2682bbbc927a6555f2eeefb",
+    "PREDICT_CNN.py": "636a19f13fb24324e12c42532a762ab633ba3ead8149dc971b38ba7618a728d7",
+    "TRAIN_CNN.py": "f3ef2654f9092d941026cb3aa7f110b9d2fab6194ff53477d1a8449c1c558678",
+    "cnn_data.py": "60ccc5b659950f95bcca73a93be312dc51b0aff79ea3031a963815f2b8cdf157",
+    "cnn_metrics.py": "e14e5bf7cb44163ab5eaf2e8e5b5cbdc8bb0075e62823072e0668db3ec931400",
+    "cnn_model.py": "6d328e809d4700a51e58da559b3dd74b23c033745ce32e65a3c8f51540925ab5",
+    "requirements-cnn.txt": "adc7ea6005fd679d186cd5b1d66c40d45a8a81b046a80d99ce5956e47d67d2a0"
+  }
+}
