@@ -1,0 +1,72 @@
+{
+  "verification_scope": "Structural preview using recovered V2 manifest bytes whose SHA-256 exactly matches the supplied split_report.json. Real image files must still be rechecked on the user computer.",
+  "v2_manifest_sha256": "412050d14c32c79269d1ead8878f5679862c0911327771a3c008c9563e9ba66f",
+  "input_records": 5869,
+  "output_records": 5869,
+  "old_groups": 5101,
+  "new_groups": 4786,
+  "split_counts": {
+    "val": 1187,
+    "test": 1163,
+    "train": 3519
+  },
+  "label_split_counts": {
+    "apple::fresh": {
+      "train": 555,
+      "val": 185,
+      "test": 181
+    },
+    "apple::rotten": {
+      "train": 495,
+      "val": 172,
+      "test": 174
+    },
+    "banana::fresh": {
+      "train": 376,
+      "val": 126,
+      "test": 122
+    },
+    "banana::rotten": {
+      "train": 489,
+      "val": 163,
+      "test": 162
+    },
+    "orange::fresh": {
+      "train": 449,
+      "val": 153,
+      "test": 146
+    },
+    "orange::rotten": {
+      "train": 445,
+      "val": 151,
+      "test": 149
+    },
+    "tomato::fresh": {
+      "train": 365,
+      "val": 119,
+      "test": 118
+    },
+    "tomato::rotten": {
+      "train": 345,
+      "val": 118,
+      "test": 111
+    }
+  },
+  "candidate_pairs": 471,
+  "candidate_cross_split_before": 244,
+  "candidate_cross_split_after": 0,
+  "contact_sheet_pairs_reviewed": 8,
+  "other_pairs_grouped_conservatively": 463,
+  "mixed_label_groups_in_train": {
+    "v3_e6166d243c88075695a6c8f28af002ce": {
+      "labels": [
+        "tomato::fresh",
+        "tomato::rotten"
+      ],
+      "images": 4,
+      "assigned_split": "train"
+    }
+  },
+  "local_image_files_rechecked_here": false,
+  "accuracy_measured": false
+}

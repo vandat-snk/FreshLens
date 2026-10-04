@@ -1,0 +1,18 @@
+{
+  "unit_tests": 24,
+  "unit_tests_passed": 24,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "Pillow": "12.3.0",
+  "NumPy": "2.3.5",
+  "actual_manifest_metadata_regression": "15537 rows; 1452 filename-derived families across splits; 5869 candidate original filenames",
+  "real_user_images_checked_here": false,
+  "live_mongodb_accessed": false,
+  "windows_execution_tested_here": false,
+  "accuracy_measured": false,
+  "cli_checks_passed": [
+    "create outputs with review-required state and contact sheet",
+    "refuse overwrite of an existing output directory"
+  ],
+  "contact_sheet_visual_check": "labels and pair IDs readable; test fixtures only"
+}

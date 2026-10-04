@@ -1,0 +1,10 @@
+FreshLens Step 5 FIX v2
+=======================
+Loi da sua: ModuleNotFoundError: No module named 'cnn_data'.
+
+1. Giai nen thu muc FreshLens_Buoc5_FIX de no nam ngay trong project FreshLens.
+2. Cho phep ghi de (replace) thu muc FreshLens_Buoc5_FIX cu neu Windows hoi.
+3. Chay SETUP_STEP5_FIX.cmd.
+4. Khi thay [OK] Step 5 FIX hoan tat, chay FreshLens_Buoc5_AppThucTe\RUN_APP.cmd.
+
+Goi nay KHONG train lai EfficientNet-B0 va KHONG sua best.pt.

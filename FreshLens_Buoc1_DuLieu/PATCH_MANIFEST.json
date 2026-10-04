@@ -1,0 +1,61 @@
+{
+  "patch": "FreshLens_step1_data",
+  "based_on": "FreshLens_complete_v2.rar",
+  "files": [
+    {
+      "path": "scripts/db_manager.py",
+      "base_text_sha256": "b375508b8d292dee8b5286c8d44930584805d9819af674108746bf8336176cc4",
+      "new_text_sha256": "3a92b6a7446a4d52e8665cfe98ac7582b33fa69bcdf850f66fec598af185525f"
+    },
+    {
+      "path": "scripts/upload_dataset_to_db.py",
+      "base_text_sha256": "87a79464696a042e95f7d522c1cc8eecff8e338cbb5a72b93775297d0547f8dc",
+      "new_text_sha256": "ac55e84c10eccd0c88f01167f3350e6e7ff886e3a5c24cd7e2934a169706fcd0"
+    },
+    {
+      "path": "scripts/export_manifest_from_db.py",
+      "base_text_sha256": "17a193e0063c995b32ef4b2ce9ae79aa2988925dbc95d9008789792121e4d727",
+      "new_text_sha256": "4a8ff4673bf04aa5db4787c7f30f21a35fd42dbf96562cb8422cd0836750ba7d"
+    },
+    {
+      "path": "src/data_integrity.py",
+      "base_text_sha256": null,
+      "new_text_sha256": "134d9bbf92b2e99b8ade4a4a4518907a083eca475780961b9f12743d0570cffc"
+    },
+    {
+      "path": "src/check_dataset.py",
+      "base_text_sha256": "af9c0649b379e9ce5fd48a5ba1059a78b825a9ca7f0cff8b022f5ab58352f560",
+      "new_text_sha256": "b3cbbc9bae509e6b472b6e1a69ae417098f0029244e88bee0fcac8cc781ffe4e"
+    },
+    {
+      "path": "src/train.py",
+      "base_text_sha256": "c26b464ac785903080a64089b454e50e9496f33da140d024c3455e69a2cd0a85",
+      "new_text_sha256": "7e5d18b6db66796348c35629a5a4a33ba42429ad258a1832547c880ff09c57c6"
+    },
+    {
+      "path": "src/config.py",
+      "base_text_sha256": "6f7fb299b159ab8665248b6745dd2b5988b8c3f3f78dfe1f412c668e67d2d950",
+      "new_text_sha256": "369330da4467d2a014ac46f0c270f4e591fa7674961cf0184ce0cdbad867223c"
+    },
+    {
+      "path": "requirements.txt",
+      "base_text_sha256": "844ad28b566e9e8a8af1d5769d2d3f914ace0f9ad2e8a5fe9e73f6e0211ce762",
+      "new_text_sha256": "f87678c0c78d1cbcab5222fbfabda40541eabe931bcaedd65484e9508714c741"
+    },
+    {
+      "path": "requirements-db.txt",
+      "base_text_sha256": null,
+      "new_text_sha256": "029084986c2e674a9e9d48903c05bc17a89056081a9828ae495201e44198944e"
+    },
+    {
+      "path": "run_train.bat",
+      "base_text_sha256": "6ea48e065d3fab5f885ed35961d9c2b8a0224def84e6156a01c74e12a9ccd6fb",
+      "new_text_sha256": "7e798577fcf8f66ba3e84d1bd9a0b6264ba06a41aa35914840f2b3253126be46"
+    },
+    {
+      "path": "tests/test_step1_data.py",
+      "base_text_sha256": null,
+      "new_text_sha256": "e949cef249af3202369dfd68d19472df47f5b14b4579dfac7d30ac0f3b763472"
+    }
+  ]
+}

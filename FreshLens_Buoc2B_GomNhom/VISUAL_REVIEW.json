@@ -1,0 +1,87 @@
+{
+  "source_image": "pairs_01.jpg",
+  "source_image_sha256": "58cf5e14f3422115baffe4c834be8a23b489162f4bbf2dcbc0815aff7625f931",
+  "scope": "Only pairs 1-8 in one contact sheet were visually inspected. Original-resolution images and source specimen IDs were not supplied.",
+  "pairs": [
+    {
+      "pair_id": "1",
+      "path_a": "raw/tomato/fresh/freshTomato (243).jpg",
+      "path_b": "raw/tomato/rotten/rottenTomato (380).jpg",
+      "sha256_a": "d5e5114acbc6c80f7f3163c3e28a4f7e473db330c6a0aec599a9c3ad2913bb8f",
+      "sha256_b": "0ef7c405ae002dcf924f1b5184924ab20bf80ba77dcc954195dd88d34440dfb3",
+      "observation": "Hai anh co ngoai hinh khac nhau: anh fresh co be mat tuong doi nguyen ven; anh rotten co vet hu hong nhin thay. Chua co co so doi nhan; khong biet co cung vat the that hay khong.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "2",
+      "path_a": "raw/tomato/fresh/freshTomato (243).jpg",
+      "path_b": "raw/tomato/rotten/rottenTomato (568).jpg",
+      "sha256_a": "d5e5114acbc6c80f7f3163c3e28a4f7e473db330c6a0aec599a9c3ad2913bb8f",
+      "sha256_b": "9266b02b17a19e78da0f458ce456e2cbc87b7dfb04bc0b28529ab055cbf6ca57",
+      "observation": "Hai anh co ngoai hinh khac nhau: anh fresh co be mat tuong doi nguyen ven; anh rotten co vet hu hong nhin thay. Chua co co so doi nhan; khong biet co cung vat the that hay khong.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "3",
+      "path_a": "raw/apple/fresh/freshApple (211).jpg",
+      "path_b": "raw/apple/fresh/freshApple (266).jpg",
+      "sha256_a": "cfb6c37ab1263f0c16563c38c63272200eedfbe92cf2b438ca53921af62a8226",
+      "sha256_b": "246cd19cafd29b62d24f60dec37e668f2b2b8902ad78f23bd4bd8cb2393a29d7",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "4",
+      "path_a": "raw/apple/fresh/freshApple (247).jpg",
+      "path_b": "raw/apple/fresh/freshApple (248).jpg",
+      "sha256_a": "9e01ed4bc351cf33120eb39ada07bdb91169c80141bf10a1a8d368cc6c234a93",
+      "sha256_b": "17a84da3e32e96a6c3254f2c072c7d4cc85793d6dd48e15b184880408a536f00",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "5",
+      "path_a": "raw/apple/fresh/freshApple (249).jpg",
+      "path_b": "raw/apple/fresh/freshApple (250).jpg",
+      "sha256_a": "f98ae2515e419117de70fdc30b169cda0a13cbffbefa17b8f8c5069c64c8f63d",
+      "sha256_b": "9606f7f69e22b92e7aab0f4d87f5b9f111002d15b7a2f1919c42eabdb816e6e9",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "6",
+      "path_a": "raw/apple/fresh/freshApple (259).jpg",
+      "path_b": "raw/apple/fresh/freshApple (260).jpg",
+      "sha256_a": "956eb14fbf4b42d31bdfccd6abf64b55734256a4b7c0b74cdd7acecaeda4eff8",
+      "sha256_b": "40a15aed78f7310f776e965eda2ff25318a92f0a80d418ccb324717d47b9529d",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "7",
+      "path_a": "raw/apple/fresh/freshApple (285).jpg",
+      "path_b": "raw/apple/fresh/freshApple (286).jpg",
+      "sha256_a": "3ee94cba8f98c526052abd213081ab36aa88a81cca6cabfa6753c7d18e6ddd6f",
+      "sha256_b": "6a615d670d3963dc6c3928aea6e4289c101243e63f6023425ed65b8f95069fc9",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    },
+    {
+      "pair_id": "8",
+      "path_a": "raw/apple/fresh/freshApple (285).jpg",
+      "path_b": "raw/apple/fresh/freshApple (289).jpg",
+      "sha256_a": "3ee94cba8f98c526052abd213081ab36aa88a81cca6cabfa6753c7d18e6ddd6f",
+      "sha256_b": "f32f7da9c716a5b4ca602c09713d87d252678655d496f7c73e3da50251f9effe",
+      "observation": "Hai anh tao trong rat giong nhau, co ve la cung qua hoac cac goc chup/ban bien the gan nhau. Nen giu cung nhom danh gia; chua xac minh file goc hay cung vat the that.",
+      "action": "keep_labels_and_coassign_group",
+      "exact_duplicate_confirmed": false
+    }
+  ]
+}

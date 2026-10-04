@@ -1,0 +1,16 @@
+{
+  "regression_tests_passed": 27,
+  "existing_checks_passed": 6,
+  "python_files_syntax_checked": 22,
+  "installer_checks_passed": [
+    "apply_all_11_files_and_preserve_original_backups",
+    "reapply_is_idempotent",
+    "local_edits_stop_patch_without_any_writes"
+  ],
+  "environment": "Linux; image preprocessing used Pillow/NumPy fallback (OpenCV absent).",
+  "not_run": [
+    "live MongoDB or Cloudinary",
+    "Windows UI/batch execution",
+    "real-dataset model training"
+  ]
+}

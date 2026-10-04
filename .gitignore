@@ -28,13 +28,6 @@ reports/
 Thumbs.db
 .DS_Store
 
-# Intermediate development packages
-FreshLens_Buoc1_DuLieu/
-FreshLens_Buoc2_ChiaTap/
-FreshLens_Buoc2B_GomNhom/
-FreshLens_Buoc4_ExternalTest/
-FreshLens_Buoc4B_MoRongExternalTest/
-FreshLens_Buoc5_FIX/
 
 # Generated / temporary artifacts
 artifacts/

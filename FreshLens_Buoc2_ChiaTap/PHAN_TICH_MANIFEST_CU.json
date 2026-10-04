@@ -1,0 +1,141 @@
+{
+  "input_manifest_sha256": "cfc6f55b449e3ee020623c14cc4ecdebc4ccf105976c70aab0f6e3d5dce63397",
+  "source_checker_is_valid": true,
+  "source_checker_warning_count": 10,
+  "interpretation": "The old checker passed file/hash/declared-group checks; filename-derived augmentation links reveal additional split leakage. No real image pixels were available for this remote review.",
+  "filename_audit": {
+    "evidence": "filename rules only; augmented image pixels not inspected here",
+    "input_records": 15537,
+    "input_split_counts": {
+      "test": 3401,
+      "train": 9115,
+      "val": 3021
+    },
+    "filename_kind_counts": {
+      "candidate_original": 5869,
+      "offline_augmentation": 9310,
+      "offline_augmentation_unknown_parent": 358
+    },
+    "screen_families": 1511,
+    "screen_families_across_old_splits": 1452,
+    "rows_in_these_families": 10013,
+    "screen_families_without_named_original": 498,
+    "candidate_originals_before_pixel_check": 5869,
+    "candidate_counts_by_label": {
+      "apple::fresh": 921,
+      "apple::rotten": 841,
+      "banana::fresh": 624,
+      "banana::rotten": 814,
+      "orange::fresh": 748,
+      "orange::rotten": 745,
+      "tomato::fresh": 602,
+      "tomato::rotten": 574
+    },
+    "examples": [
+      {
+        "family": "screen::screen shot 2018-06-07 at 2.15.20 pm",
+        "files": [
+          {
+            "path": "raw/apple/rotten/rotated_by_15_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_30_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "val"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_45_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_60_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_75_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/saltandpepper_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "val"
+          },
+          {
+            "path": "raw/apple/rotten/translation_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/vertical_flip_Screen Shot 2018-06-07 at 2.15.20 PM.png",
+            "old_split": "val"
+          }
+        ]
+      },
+      {
+        "family": "screen::screen shot 2018-06-07 at 2.15.34 pm",
+        "files": [
+          {
+            "path": "raw/apple/rotten/rotated_by_15_Screen Shot 2018-06-07 at 2.15.34 PM.png",
+            "old_split": "val"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_30_Screen Shot 2018-06-07 at 2.15.34 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_60_Screen Shot 2018-06-07 at 2.15.34 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/translation_Screen Shot 2018-06-07 at 2.15.34 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/vertical_flip_Screen Shot 2018-06-07 at 2.15.34 PM.png",
+            "old_split": "train"
+          }
+        ]
+      },
+      {
+        "family": "screen::screen shot 2018-06-07 at 2.15.50 pm",
+        "files": [
+          {
+            "path": "raw/apple/rotten/rotated_by_15_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "val"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_30_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_45_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_60_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/rotated_by_75_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/saltandpepper_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "test"
+          },
+          {
+            "path": "raw/apple/rotten/Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "train"
+          },
+          {
+            "path": "raw/apple/rotten/translation_Screen Shot 2018-06-07 at 2.15.50 PM.png",
+            "old_split": "train"
+          }
+        ]
+      }
+    ]
+  },
+  "next_action": "Run STEP2_SPLIT.py locally to check the 5869 candidate images, build a new manifest, and review similar-image candidates."
+}

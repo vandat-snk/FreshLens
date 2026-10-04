@@ -1,0 +1,26 @@
+{
+  "tests_passed": 16,
+  "tests_failed": 0,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "Pillow": "12.3.0",
+  "NumPy": "2.3.5",
+  "cli_help_check": "passed",
+  "input_manifest_reconstruction": "SHA-256 exactly matches the uploaded V2 report",
+  "real_metadata_regression": {
+    "records": 5869,
+    "new_groups": 4786,
+    "candidate_pairs": 471,
+    "candidate_cross_split_after": 0,
+    "all_8_labels_in_each_split": true,
+    "visually_inspected_pairs": 8
+  },
+  "real_dataset_images_rechecked_here": false,
+  "windows_runtime_tested_here": false,
+  "gpu_training_executed": false,
+  "accuracy_measured": false,
+  "source_sha256": {
+    "STEP2B_GROUP.py": "a42e7c5fb1ad0ad1927a98f72d3ec8edd7cca80f3ae4354ecd61d77c93b5b679",
+    "step2_core.py": "0e4a0dc8d207fbd83cc038e2baba1734db44f1e588530b2c0af089c05ecedfe0"
+  }
+}
