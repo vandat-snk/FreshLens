@@ -1,0 +1,9 @@
+{
+  "version": "2.1.0",
+  "manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+  "report_sha256": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+  "records": 5869,
+  "seed": 42,
+  "ready_for_pilot_training": true,
+  "instruction": "Use this fixed manifest for the new CNN experiment. Do not resplit to improve reported accuracy."
+}

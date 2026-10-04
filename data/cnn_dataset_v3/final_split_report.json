@@ -1,0 +1,111 @@
+{
+  "version": "2.1.0",
+  "operation": "conservative_group_coassignment_before_new_cnn_experiment",
+  "input_fingerprints": {
+    "manifest.csv": "412050d14c32c79269d1ead8878f5679862c0911327771a3c008c9563e9ba66f",
+    "split_report.json": "bf352b05643492466c0da494d2d5a4ea03d03d9d179c9fc34a70f68d3de775f3",
+    "near_duplicates.csv": "ad810e457877b327f8f65a6d21dd85d99211a1c5c8258fd30097b4fd2968ddfc"
+  },
+  "script_sha256": "a42e7c5fb1ad0ad1927a98f72d3ec8edd7cca80f3ae4354ecd61d77c93b5b679",
+  "helper_sha256": "0e4a0dc8d207fbd83cc038e2baba1734db44f1e588530b2c0af089c05ecedfe0",
+  "seed": 42,
+  "split_policy": "60/20/20 by group within each pure label; mixed-label components kept in train",
+  "input_records": 5869,
+  "output_records": 5869,
+  "images_removed": 0,
+  "labels_changed": 0,
+  "local_image_files_verified": 5869,
+  "old_groups": 5101,
+  "new_groups": 4786,
+  "group_count_reduction": 315,
+  "merged_components": 242,
+  "largest_component_old_groups": 18,
+  "largest_group_images": 18,
+  "split_counts": {
+    "val": 1187,
+    "test": 1163,
+    "train": 3519
+  },
+  "label_split_counts": {
+    "apple::fresh": {
+      "train": 555,
+      "val": 185,
+      "test": 181
+    },
+    "apple::rotten": {
+      "train": 495,
+      "val": 172,
+      "test": 174
+    },
+    "banana::fresh": {
+      "train": 376,
+      "val": 126,
+      "test": 122
+    },
+    "banana::rotten": {
+      "train": 489,
+      "val": 163,
+      "test": 162
+    },
+    "orange::fresh": {
+      "train": 449,
+      "val": 153,
+      "test": 146
+    },
+    "orange::rotten": {
+      "train": 445,
+      "val": 151,
+      "test": 149
+    },
+    "tomato::fresh": {
+      "train": 365,
+      "val": 119,
+      "test": 118
+    },
+    "tomato::rotten": {
+      "train": 345,
+      "val": 118,
+      "test": 111
+    }
+  },
+  "groups_by_split": {
+    "train": 2871,
+    "val": 958,
+    "test": 957
+  },
+  "missing_label_split_buckets": [],
+  "pair_handling": {
+    "total_candidate_pairs": 471,
+    "cross_split_pairs_before": 244,
+    "cross_split_pairs_after": 0,
+    "different_label_pairs": 2,
+    "visually_inspected_contact_sheet_pairs": 8,
+    "unreviewed_pairs_grouped_as_precaution": 463,
+    "all_candidates_recomputed_from_image_files": true,
+    "all_candidate_links_inside_one_group": true,
+    "automatic_duplicate_identity_confirmation": false,
+    "automatic_label_changes": false
+  },
+  "mixed_label_groups_in_train": {
+    "v3_e6166d243c88075695a6c8f28af002ce": {
+      "labels": [
+        "tomato::fresh",
+        "tomato::rotten"
+      ],
+      "images": 4,
+      "assigned_split": "train"
+    }
+  },
+  "ready_for_pilot_training": true,
+  "physical_specimen_independence_confirmed": false,
+  "all_pairs_visually_reviewed": false,
+  "accuracy_measured": false,
+  "limitations": [
+    "Conservative grouping contains the detected links; it does not prove that every group is a unique real fruit.",
+    "Only eight pairs were supplied as a contact sheet for visual inspection; other pairs are grouped as a precaution.",
+    "Perceptual hashes can miss larger rotations, crops and other views of the same physical fruit.",
+    "Coassigning visually similar but unrelated images can reduce the effective number of independent groups.",
+    "Keep this split fixed during model development; use a separate labelled camera-photo test for real-world performance."
+  ],
+  "output_manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291"
+}
