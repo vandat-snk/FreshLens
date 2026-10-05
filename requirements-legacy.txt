@@ -1,0 +1,7 @@
+# Optional dependencies for the retained legacy SVM / handcrafted pipeline.
+# The modular CNN V2 pipeline does not require these packages directly.
+
+-r requirements.txt
+
+joblib>=1.3,<2
+opencv-python-headless>=4.8,<5
