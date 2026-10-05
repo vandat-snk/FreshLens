@@ -1,37 +1,36 @@
-# Python
-.venv/
+# Python environment / bytecode
+/.venv/
 __pycache__/
 *.pyc
 *.pyo
 
-# PyCharm
+# IDE
 .idea/
 
 # Secrets
-.env
+/.env
 
-# Cache / logs
-.cache/
-logs/
-*.log
+# Local caches
+/.cache/
+/dataset_cache/
 
-# Backup
-backups/
+# Generated logs / temporary outputs
+/logs/
+/artifacts/
+/backups/
 
-# Dataset lớn
-data/
+# Local datasets
+/data/
 
-# Reports sinh tự động
-reports/
+# Generated evaluation reports
+/reports/
 
-# Windows
+# Training checkpoint not intended for Git
+/models/cnn_efficientnet_b0/last.pt
+
+# Local development / connectivity test
+/scripts/test_cloudinary.py
+
+# Operating system
 Thumbs.db
 .DS_Store
-
-
-# Generated / temporary artifacts
-artifacts/
-backups/
-
-models/cnn_efficientnet_b0/last.pt
-dataset_cache/
