@@ -212,8 +212,7 @@ def synthetic_png_bytes():
     buffer = io.BytesIO()
 
     Image.fromarray(
-        array,
-        mode="RGB",
+        array
     ).save(
         buffer,
         format="PNG",
