@@ -27,7 +27,7 @@ PREPROCESS = {
     "image_size": 224, "fill_rgb": [255, 255, 255],
     "mean": [.485, .456, .406], "std": [.229, .224, .225],
 }
-PROJECT_DIR = Path(__file__).resolve().parent.parent
+PROJECT_DIR = Path(__file__).resolve().parents[3]
 
 
 class DataError(ValueError):

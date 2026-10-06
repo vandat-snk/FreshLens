@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 PROJECT_DIR = Path(__file__).resolve().parent
-LEGACY_DIR = PROJECT_DIR / "FreshLens_Buoc5_FIX"
+LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step5_fix"
 LEGACY_PATH = LEGACY_DIR / "BUILD_OPENSET_GATE.py"
 
 CHECKPOINT = (
@@ -527,7 +527,7 @@ def main():
 
     print(
         "[PASS] Stage G2 gate-builder refactor is behavior-equivalent "
-        "to FreshLens_Buoc5_FIX/BUILD_OPENSET_GATE.py"
+        "to legacy/development/step5_fix/BUILD_OPENSET_GATE.py"
     )
 
     return 0

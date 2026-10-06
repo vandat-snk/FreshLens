@@ -12,8 +12,8 @@ import torch
 from PIL import Image
 
 PROJECT_DIR = Path(__file__).resolve().parent
-STEP5_FIX = PROJECT_DIR / "FreshLens_Buoc5_FIX"
-STEP3 = PROJECT_DIR / "FreshLens_Buoc3_CNN"
+STEP5_FIX = PROJECT_DIR / "legacy" / "development" / "step5_fix"
+STEP3 = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 
 CHECKPOINT = (
     PROJECT_DIR
