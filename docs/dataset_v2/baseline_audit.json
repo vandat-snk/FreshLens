@@ -1,0 +1,195 @@
+{
+  "schema_version": "freshlens_dataset_v2_audit_1",
+  "audit_script_sha256": "5cb530813e2bdc4a0f33989f8068a885542ec32a7481cce5fb9537d1341c0a85",
+  "records": 5869,
+  "supported_records": 5869,
+  "other_records": 0,
+  "split_counts": {
+    "train": 3519,
+    "val": 1187,
+    "test": 1163
+  },
+  "supported_split_counts": {
+    "train": 3519,
+    "val": 1187,
+    "test": 1163
+  },
+  "fruit_counts": {
+    "apple": 1762,
+    "banana": 1438,
+    "orange": 1493,
+    "tomato": 1176
+  },
+  "status_counts": {
+    "fresh": 2895,
+    "rotten": 2974
+  },
+  "label_counts": {
+    "apple::fresh": 921,
+    "apple::rotten": 841,
+    "banana::fresh": 624,
+    "banana::rotten": 814,
+    "orange::fresh": 748,
+    "orange::rotten": 745,
+    "tomato::fresh": 602,
+    "tomato::rotten": 574
+  },
+  "label_split_counts": {
+    "apple::fresh": {
+      "train": 555,
+      "val": 185,
+      "test": 181
+    },
+    "apple::rotten": {
+      "train": 495,
+      "val": 172,
+      "test": 174
+    },
+    "banana::fresh": {
+      "train": 376,
+      "val": 126,
+      "test": 122
+    },
+    "banana::rotten": {
+      "train": 489,
+      "val": 163,
+      "test": 162
+    },
+    "orange::fresh": {
+      "train": 449,
+      "val": 153,
+      "test": 146
+    },
+    "orange::rotten": {
+      "train": 445,
+      "val": 151,
+      "test": 149
+    },
+    "tomato::fresh": {
+      "train": 365,
+      "val": 119,
+      "test": 118
+    },
+    "tomato::rotten": {
+      "train": 345,
+      "val": 118,
+      "test": 111
+    }
+  },
+  "other_category_counts": {
+    "other_fruit": 0,
+    "non_fruit": 0,
+    "multiple": 0
+  },
+  "other_subcategory_counts": {},
+  "source_counts": {
+    "local": 5869
+  },
+  "unique_groups": 4786,
+  "groups_by_split": {
+    "train": 2871,
+    "val": 958,
+    "test": 957
+  },
+  "missing_metadata": {
+    "path": 0,
+    "source": 0,
+    "group_id": 0,
+    "sha256": 0,
+    "split": 0
+  },
+  "metadata_errors": [],
+  "declared_identity": {
+    "duplicate_path": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
+    },
+    "cross_split_path": {
+      "keys": 0,
+      "members": {}
+    },
+    "duplicate_sha256": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
+    },
+    "cross_split_sha256": {
+      "keys": 0,
+      "members": {}
+    },
+    "cross_split_group_id": {
+      "keys": 0,
+      "members": {}
+    }
+  },
+  "actual_byte_identity": null,
+  "raw_data_status": "RAW DATA NOT AVAILABLE",
+  "quality": {
+    "records_inspected": 0,
+    "decoded_images": 0,
+    "missing_files": 5869,
+    "not_checked": 0,
+    "sha256_mismatches": null,
+    "decode_errors": null,
+    "low_resolution": null,
+    "low_brightness": null,
+    "blur": null,
+    "quality_status_counts": {
+      "NOT_AVAILABLE": 5869
+    },
+    "width_range": null,
+    "height_range": null,
+    "formats": {},
+    "original_modes": {},
+    "channels": {},
+    "exif_present": null,
+    "exif_orientations": {},
+    "candidate_thresholds": {
+      "min_side": 96,
+      "min_brightness": 35.0,
+      "min_blur_score": 50.0
+    },
+    "measurement": "native oriented RGB -> Pillow L; variance of 4-neighbour Laplacian, reflect boundary; no resizing",
+    "production_thresholds_changed": false
+  },
+  "camera": {
+    "records": 0,
+    "label_counts": {},
+    "device_counts": {},
+    "lighting_counts": {},
+    "background_counts": {},
+    "viewpoint_counts": {},
+    "distance_counts": {},
+    "hard_case_tags_counts": {},
+    "grouping_evidence_missing": 0,
+    "grouping_violations": {
+      "specimens_in_multiple_groups": {},
+      "specimens_across_splits": {},
+      "groups_with_conflicting_specimens": {}
+    },
+    "physical_specimen_independence_confirmed": false
+  },
+  "hard_case_records": 0,
+  "other_data_status": "OTHER DATA INCOMPLETE",
+  "final_test_status": "FINAL TEST NOT YET FROZEN",
+  "metadata_valid": true,
+  "all_image_files_verified": false,
+  "physical_specimen_independence_confirmed": false,
+  "baseline_lock_identity": {
+    "manifest_sha256": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+    "report_sha256": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+    "split_counts": {
+      "val": 1187,
+      "test": 1163,
+      "train": 3519
+    },
+    "new_groups": 4786,
+    "physical_specimen_independence_confirmed": false
+  },
+  "baseline_fingerprints": {
+    "manifest.csv": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+    "final_split_report.json": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+    "dataset_lock.json": "ce0a29333867905d09e489179c3b94fbb90b988a89b005ad5cc378cc03ae7945"
+  }
+}
