@@ -1,6 +1,87 @@
 {
   "schema_version": "freshlens_dataset_v2_audit_1",
-  "audit_script_sha256": "5cb530813e2bdc4a0f33989f8068a885542ec32a7481cce5fb9537d1341c0a85",
+  "audit_script_sha256": "5073b9dffecc7b6ddd0ea3476b94871a27fc7fd627b0a5f2d2effd61ea613f6f",
+  "image_path_mapping": {
+    "strip_prefix": "raw",
+    "manifest_paths_unchanged": true,
+    "overrides": {
+      "raw/tomato/fresh/freshTomato (67).jpg": "tomato/fresh/freshTomato (149).jpg",
+      "raw/tomato/fresh/freshTomato (68).jpg": "tomato/fresh/freshTomato (150).jpg",
+      "raw/tomato/rotten/rottenTomato (183).jpg": "tomato/rotten/rottenTomato (182).jpg",
+      "raw/tomato/rotten/rottenTomato (237).jpg": "tomato/rotten/rottenTomato (236).jpg",
+      "raw/tomato/rotten/rottenTomato (264).jpg": "tomato/rotten/rottenTomato (262).jpg",
+      "raw/tomato/rotten/rottenTomato (323).jpg": "tomato/rotten/rottenTomato (322).jpg",
+      "raw/tomato/rotten/rottenTomato (326).jpg": "tomato/rotten/rottenTomato (325).jpg",
+      "raw/tomato/rotten/rottenTomato (334).jpg": "tomato/rotten/rottenTomato (333).jpg",
+      "raw/tomato/rotten/rottenTomato (356).jpg": "tomato/rotten/rottenTomato (355).jpg",
+      "raw/tomato/rotten/rottenTomato (364).jpg": "tomato/rotten/rottenTomato (363).jpg",
+      "raw/tomato/rotten/rottenTomato (372).jpg": "tomato/rotten/rottenTomato (371).jpg",
+      "raw/tomato/rotten/rottenTomato (582).jpg": "tomato/rotten/rottenTomato (383).jpg",
+      "raw/tomato/rotten/rottenTomato (385).jpg": "tomato/rotten/rottenTomato (384).jpg",
+      "raw/tomato/rotten/rottenTomato (398).jpg": "tomato/rotten/rottenTomato (397).jpg",
+      "raw/tomato/rotten/rottenTomato (411).jpg": "tomato/rotten/rottenTomato (410).jpg",
+      "raw/tomato/rotten/rottenTomato (417).jpg": "tomato/rotten/rottenTomato (416).jpg",
+      "raw/tomato/rotten/rottenTomato (454).jpg": "tomato/rotten/rottenTomato (453).jpg",
+      "raw/tomato/rotten/rottenTomato (460).jpg": "tomato/rotten/rottenTomato (459).jpg",
+      "raw/tomato/rotten/rottenTomato (466).jpg": "tomato/rotten/rottenTomato (465).jpg",
+      "raw/tomato/rotten/rottenTomato (503).jpg": "tomato/rotten/rottenTomato (502).jpg",
+      "raw/tomato/rotten/rottenTomato (509).jpg": "tomato/rotten/rottenTomato (508).jpg",
+      "raw/tomato/rotten/rottenTomato (516).jpg": "tomato/rotten/rottenTomato (515).jpg",
+      "raw/tomato/rotten/rottenTomato (544).jpg": "tomato/rotten/rottenTomato (543).jpg",
+      "raw/tomato/rotten/rottenTomato (574).jpg": "tomato/rotten/rottenTomato (573).jpg",
+      "raw/orange/fresh/freshOrange (62).jpg": "orange/fresh/freshOrange (167).jpg",
+      "raw/orange/fresh/freshOrange (63).jpg": "orange/fresh/freshOrange (168).jpg",
+      "raw/orange/fresh/freshOrange (77).jpg": "orange/fresh/freshOrange (27).jpg",
+      "raw/orange/fresh/freshOrange (78).jpg": "orange/fresh/freshOrange (65).jpg",
+      "raw/orange/fresh/freshOrange (79).jpg": "orange/fresh/freshOrange (66).jpg",
+      "raw/orange/fresh/freshOrange (87).jpg": "orange/fresh/freshOrange (74).jpg",
+      "raw/orange/fresh/freshOrange (88).jpg": "orange/fresh/freshOrange (75).jpg",
+      "raw/orange/rotten/rottenOrange (218).jpg": "orange/rotten/rotated_by_15_Screen Shot 2018-06-12 at 11.18.28 PM.png",
+      "raw/orange/rotten/rottenOrange (219).jpg": "orange/rotten/rotated_by_15_Screen Shot 2018-06-12 at 11.20.05 PM.png",
+      "raw/orange/rotten/rottenOrange (220).jpg": "orange/rotten/rotated_by_15_Screen Shot 2018-06-12 at 11.35.59 PM.png",
+      "raw/orange/rotten/rottenOrange (228).jpg": "orange/rotten/rotated_by_15_Screen Shot 2018-06-12 at 11.36.24 PM.png",
+      "raw/orange/rotten/rottenOrange (236).jpg": "orange/rotten/rotated_by_15_Screen Shot 2018-06-12 at 11.36.42 PM.png",
+      "raw/orange/rotten/rottenOrange (583).jpg": "orange/rotten/rotated_by_45_Screen Shot 2018-06-12 at 11.25.20 PM.png",
+      "raw/orange/rotten/rottenOrange (587).jpg": "orange/rotten/rotated_by_45_Screen Shot 2018-06-12 at 11.46.26 PM.png",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.34.00 PM.png": "orange/rotten/rottenOrange (221).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.34.13 PM.png": "orange/rotten/rottenOrange (222).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.35.51 PM.png": "orange/rotten/rottenOrange (223).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.36.24 PM.png": "orange/rotten/rottenOrange (224).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.37.19 PM.png": "orange/rotten/rottenOrange (225).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.37.45 PM.png": "orange/rotten/rottenOrange (226).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.38.19 PM.png": "orange/rotten/rottenOrange (227).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.38.34 PM.png": "orange/rotten/rottenOrange (229).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.38.46 PM.png": "orange/rotten/rottenOrange (230).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.38.52 PM.png": "orange/rotten/rottenOrange (231).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.39.02 PM.png": "orange/rotten/rottenOrange (232).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.39.19 PM.png": "orange/rotten/rottenOrange (233).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.41.26 PM.png": "orange/rotten/rottenOrange (234).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.41.44 PM.png": "orange/rotten/rottenOrange (235).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.42.20 PM.png": "orange/rotten/rottenOrange (237).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.42.45 PM.png": "orange/rotten/rottenOrange (238).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.42.52 PM.png": "orange/rotten/rottenOrange (239).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.43.03 PM.png": "orange/rotten/rottenOrange (240).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.43.10 PM.png": "orange/rotten/rottenOrange (241).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.43.22 PM.png": "orange/rotten/rottenOrange (242).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.45.17 PM.png": "orange/rotten/rottenOrange (243).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.45.21 PM.png": "orange/rotten/rottenOrange (244).jpg",
+      "raw/orange/rotten/Screen Shot 2018-06-12 at 11.45.28 PM.png": "orange/rotten/rottenOrange (245).jpg",
+      "raw/banana/fresh/freshBanana (422).jpg": "banana/fresh/freshBanana (1).webp",
+      "raw/banana/rotten/rottenBanana (221).jpg": "banana/rotten/rotated_by_15_Screen Shot 2018-06-12 at 9.20.56 PM.png",
+      "raw/banana/rotten/rottenBanana (237).jpg": "banana/rotten/rotated_by_15_Screen Shot 2018-06-12 at 9.25.00 PM.png",
+      "raw/banana/rotten/rottenBanana (238).jpg": "banana/rotten/rotated_by_15_Screen Shot 2018-06-12 at 9.25.34 PM.png",
+      "raw/banana/rotten/rottenBanana (239).jpg": "banana/rotten/rotated_by_15_Screen Shot 2018-06-12 at 9.26.21 PM.png",
+      "raw/banana/rotten/rottenBanana (216).jpg": "banana/rotten/rotated_by_30_Screen Shot 2018-06-12 at 9.19.17 PM.png",
+      "raw/banana/rotten/rottenBanana (219).jpg": "banana/rotten/rotated_by_45_Screen Shot 2018-06-12 at 9.19.42 PM.png",
+      "raw/banana/rotten/rottenBanana (226).jpg": "banana/rotten/rotated_by_45_Screen Shot 2018-06-12 at 9.22.13 PM.png",
+      "raw/apple/fresh/freshApple (542).png": "apple/fresh/freshApple (1).png",
+      "raw/apple/fresh/freshApple (456).png": "apple/fresh/freshApple (427).png",
+      "raw/apple/fresh/freshApple (471).png": "apple/fresh/freshApple (463).png",
+      "raw/apple/fresh/freshApple (525).png": "apple/fresh/freshApple (492).png",
+      "raw/apple/fresh/freshApple (526).png": "apple/fresh/freshApple (493).png",
+      "raw/apple/fresh/freshApple (537).png": "apple/fresh/freshApple (497).png"
+    }
+  },
   "records": 5869,
   "supported_records": 5869,
   "other_records": 0,
@@ -123,28 +204,101 @@
       "members": {}
     }
   },
-  "actual_byte_identity": null,
-  "raw_data_status": "RAW DATA NOT AVAILABLE",
-  "quality": {
-    "records_inspected": 0,
-    "decoded_images": 0,
-    "missing_files": null,
-    "not_checked": 5869,
-    "sha256_mismatches": null,
-    "decode_errors": null,
-    "low_resolution": null,
-    "low_brightness": null,
-    "blur": null,
-    "quality_status_counts": {
-      "NOT_AVAILABLE": 5869
+  "actual_byte_identity": {
+    "duplicate_path": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
     },
-    "width_range": null,
-    "height_range": null,
-    "formats": {},
-    "original_modes": {},
-    "channels": {},
-    "exif_present": null,
-    "exif_orientations": {},
+    "cross_split_path": {
+      "keys": 0,
+      "members": {}
+    },
+    "duplicate_sha256": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
+    },
+    "cross_split_sha256": {
+      "keys": 0,
+      "members": {}
+    },
+    "cross_split_group_id": {
+      "keys": 0,
+      "members": {}
+    }
+  },
+  "decoded_pixel_identity": {
+    "duplicate_path": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
+    },
+    "cross_split_path": {
+      "keys": 0,
+      "members": {}
+    },
+    "duplicate_sha256": {
+      "keys": 0,
+      "extra_records": 0,
+      "members": {}
+    },
+    "cross_split_sha256": {
+      "keys": 0,
+      "members": {}
+    },
+    "cross_split_group_id": {
+      "keys": 0,
+      "members": {}
+    }
+  },
+  "raw_data_status": "AVAILABLE",
+  "quality": {
+    "records_inspected": 5869,
+    "decoded_images": 5869,
+    "missing_files": 0,
+    "read_errors": 0,
+    "low_quality_count": 1896,
+    "not_checked": 0,
+    "sha256_mismatches": 0,
+    "decode_errors": 0,
+    "low_resolution": 3,
+    "low_brightness": 12,
+    "blur": 1891,
+    "quality_status_counts": {
+      "LOW_QUALITY": 1896,
+      "OK": 3973
+    },
+    "width_range": [
+      80,
+      4160
+    ],
+    "height_range": [
+      95,
+      4160
+    ],
+    "formats": {
+      "JPEG": 3247,
+      "PNG": 2612,
+      "WEBP": 10
+    },
+    "original_modes": {
+      "RGB": 4740,
+      "RGBA": 1127,
+      "P": 2
+    },
+    "channels": {
+      "3": 4740,
+      "4": 1127,
+      "1": 2
+    },
+    "exif_present": 1336,
+    "exif_orientations": {
+      "missing": 4662,
+      "1": 1197,
+      "6": 2,
+      "3": 8
+    },
     "candidate_thresholds": {
       "min_side": 96,
       "min_brightness": 35.0,
@@ -174,7 +328,31 @@
   "other_data_status": "OTHER DATA INCOMPLETE",
   "final_test_status": "FINAL TEST NOT YET FROZEN",
   "metadata_valid": true,
-  "all_image_files_verified": false,
+  "all_image_files_verified": true,
   "physical_specimen_independence_confirmed": false,
-  "baseline_lock_identity": null
+  "dataset_name": "Dataset V2 (TV1), storage cnn_dataset_v5",
+  "baseline_fingerprints": {
+    "manifest.csv": "9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291",
+    "final_split_report.json": "936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53",
+    "dataset_lock.json": "ce0a29333867905d09e489179c3b94fbb90b988a89b005ad5cc378cc03ae7945"
+  },
+  "inventory_sha256": "a9aa08a5bcbe64940019bd921d6700d3b4663b0cfa0e2436a0347243cd37eb4e",
+  "added_supported_records": 0,
+  "added_other_records": 0,
+  "seed": 42,
+  "split_policy": "Freeze baseline/declared splits; group+SHA union; new pure components 60/20/20 by label; mixed components train",
+  "baseline_records_preserved": true,
+  "ready_for_pilot_training": true,
+  "candidate_data_loader_available": true,
+  "production_loader_compatible": false,
+  "build_status": "VERIFIED_BASELINE_ONLY",
+  "limitations": [
+    "No current raw baseline or new image claim without verification.",
+    "Different group IDs do not prove different physical fruit specimens.",
+    "Exact byte SHA does not detect crops, compression or different views.",
+    "New near-duplicate review and an independently collected frozen final test are still required.",
+    "Candidate quality thresholds are diagnostic, not production inference rules."
+  ],
+  "output_manifest_sha256": "edd7a0804e630a57f9b9829b1f3d889f9ecdc556b4b670620fd575a1fe15a099",
+  "other_manifest_sha256": "fe83bfa999b1578984e2473ac05f63f87b3acc55b20989c73b4d43b3bf0e5f6c"
 }

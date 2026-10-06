@@ -1,44 +1,51 @@
 # TV1 Dataset V2 & Image Processing — FreshLens
 
-Audit ngày 06/10/2026, branch `feat/data-v2`. **Công cụ và metadata snapshot đã có; Dataset V2 thực tế chưa đạt nghiệm thu vì chưa có raw/camera/hard cases/other.** Không tạo ảnh hoặc số liệu thay thế. Tài liệu phân công Word được đọc như context; những đề xuất model/UI trong đó không mở rộng phạm vi người dùng cho TV1.
+Cập nhật 06/10/2026 trên branch `feat/data-v2`. **Đã audit ảnh thật và build candidate baseline-only; chưa hoàn thành nghiệm thu camera/hard cases/other.** Không tạo ảnh giả. Tài liệu đính kèm được dùng làm context; phạm vi thực hiện tuân theo yêu cầu người dùng.
 
 ## 1. Baseline
 
-Baseline: `data/cnn_dataset_v3/`, 8 supported classes. Số dưới đây được đếm trực tiếp từ manifest, không phải số ảnh raw đã kiểm chứng trong phiên này.
+`data/cnn_dataset_v3`: 5869 bản ghi, đủ 8 class; **5869 ảnh đã đọc byte, hash và decode thực tế** trong phiên này.
 
-| Mục | Bản ghi |
-|---|---:|
-| Tổng | 5869 |
-| Train | 3519 |
-| Validation (`val`) | 1187 |
-| Test | 1163 |
-| Unique group | 4786 |
-| Source `local` | 5869 |
+| Mục | Baseline | Candidate V5 |
+|---|---:|---:|
+| Total supported | 5869 | 5869 |
+| Train | 3519 | 3519 |
+| Validation (val) | 1187 | 1187 |
+| Test | 1163 | 1163 |
+| Other | 0 | 0 |
+| Unique group | 4786 | 4786 |
 
-Fruit: apple 1762, banana 1438, orange 1493, tomato 1176. Status: fresh 2895, rotten 2974. Groups train/val/test = 2871/958/957. Bảy field bắt buộc không thiếu giá trị; metadata nguồn chỉ là `local`, không đủ source dataset/device/license/specimen provenance.
+Fruit apple/banana/orange/tomato = 1762/1438/1493/1176. Fresh/rotten = 2895/2974. Groups train/val/test = 2871/958/957. Source `local`: 5869; bảy field bắt buộc không thiếu. Device, source dataset, license, specimen evidence và hard-case metadata chưa được xác minh.
 
-Manifest SHA256: `9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291`.
-Report SHA256: `936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53`.
-Cả hai khớp `dataset_lock.json`. Ba file baseline được fingerprint trước/sau build và giữ nguyên.
+### Mapping và tính bất biến
 
-**RAW DATA NOT AVAILABLE.** Không có `raw/...` được manifest tham chiếu ở repository root: 5869/5869 file không tìm thấy tại root đã kiểm tra. Điều này không chứng minh ảnh không tồn tại ở máy/cloud khác. Repo chỉ có metadata V3, không có image root được người dùng xác nhận. Con số `local_image_files_verified=5869` trong report V3 là bằng chứng lịch sử, không phải kiểm chứng lại hiện tại.
+Raw hiện có: `data/raw/cnn_v3` gồm 15629 ảnh + README; `data/raw/cnn_v3_originals` gồm 5869 ảnh + matched catalog. Trạng thái hiện tại **RAW DATA AVAILABLE**; kết luận thiếu raw ở report cũ đã được thay bằng audit thực tế.
+
+Manifest dùng `raw/fruit/status/file`, originals root không chứa prefix `raw`. 75 path còn khác tên file với manifest: catalog đã chọn file byte-identical khác tên. Audit dùng `--strip-prefix raw --path-map-csv data/raw/cnn_v3_originals/matched_originals.csv`, kiểm tra coverage và mọi metadata catalog trước SHA/decode. Không copy, rename, sửa raw hoặc tạo manifest trung gian. Lock V5 lưu 75 overrides.
+
+5855 physical filenames thuộc dạng candidate_original; 14 có transform marker theo legacy parser. “Verified originals” ở đây nghĩa là **khớp SHA V3**, không bảo đảm đều là ảnh chụp nguyên thủy độc lập. Không tự đổi label/group/split dựa trên tên.
+
+Fingerprint trước/sau audit/build vẫn bằng baseline:
+- manifest.csv: `9be1db4f31ad753a75e54761dceda3aa4081d3add3b67baedccd4253ad83d291`
+- final_split_report.json: `936dd0587808bd29ad6da664c8a81822a70213c49e1038a625b4752c1b28ca53`
+- dataset_lock.json: `ce0a29333867905d09e489179c3b94fbb90b988a89b005ad5cc378cc03ae7945`
 
 ## 2. Dataset V2
 
-Deliverable TV1 gọi Dataset V2, output riêng `data/cnn_dataset_v4/` theo version storage hiện tại. Snapshot đầu tiên giữ 5869 supported metadata rows từ V3; **raw V2 total = NOT AVAILABLE**. Không nhân bản dữ liệu pixel và không thay đổi baseline.
+Tên deliverable Dataset V2; storage candidate mới `data/cnn_dataset_v5`. Đã kiểm tra lock V4: snapshot metadata-only, ready=false; giữ nguyên V4. V5 reuse originals root, không nhân bản pixels.
 
-| Mục | Metadata hiện có | Ảnh thật mới |
-|---|---:|---|
-| Supported | 5869 | NOT AVAILABLE |
-| Camera | 0 | NOT AVAILABLE |
-| Hard cases được gắn metadata | 0 | NOT AVAILABLE |
-| Other | 0 | NOT AVAILABLE |
+- Supported: 5869 ảnh thật; added supported = 0.
+- Camera có metadata/evidence: 0.
+- Hard cases có tag được khai báo: 0.
+- Other: 0; không admit unmatched.
+- Build status: `VERIFIED_BASELINE_ONLY`; ready_for_pilot_training=true cho baseline-only candidate đã kiểm chứng ảnh.
+- production_loader_compatible=false: không thay production V3 loader hoặc training entrypoint.
 
-`manifest.csv` supported có đủ bảy field production, capture metadata và quality metadata. `other_manifest.csv` chỉ có header vì chưa có ảnh unknown. `image_quality.csv` có 5869 hàng trạng thái chưa đo. `dataset_report.json` ghi lineage, incomplete status, split policy; `dataset_lock.json` fingerprint các file output. `ready_for_pilot_training=false`, `production_loader_compatible=false`.
+V5 có manifest, other manifest header-only, quality sidecar, report và lock. Adapter `load_candidate_dataset` kiểm tra lock/hash/metadata, map path trong bộ nhớ, giữ manifest_path và target tám nhãn. Readiness không chứng minh cải thiện accuracy/domain shift hoặc physical independence.
 
 ## 3. Supported distribution
 
-| Fruit × status | Baseline total | V2 metadata | Train | Val | Test |
+| Fruit × status | Baseline | V5 | Train | Val | Test |
 |---|---:|---:|---:|---:|---:|
 | Apple Fresh | 921 | 921 | 555 | 185 | 181 |
 | Apple Rotten | 841 | 841 | 495 | 172 | 174 |
@@ -49,134 +56,146 @@ Deliverable TV1 gọi Dataset V2, output riêng `data/cnn_dataset_v4/` theo vers
 | Tomato Fresh | 602 | 602 | 365 | 119 | 118 |
 | Tomato Rotten | 574 | 574 | 345 | 118 | 111 |
 
-Chưa có ảnh mới để kết luận cải thiện domain shift. Class imbalance lớn nhất/nhỏ nhất = 921/574 ≈1.60; TV1 chỉ báo phân bố, không tự đổi loss/sampler.
+Class imbalance lớn nhất/nhỏ nhất = 921/574 ≈1.60. Báo phân bố, không đổi loss/sampler hoặc training.
 
 ## 4. Other distribution
 
-**OTHER DATA INCOMPLETE**.
+| Category | V5 images |
+|---|---:|
+| Other fruits | 0 |
+| Non-fruit | 0 |
+| Multiple | 0 |
+| Total | 0 |
 
-| Category | Metadata rows | Real images |
-|---|---:|---|
-| Other fruits | 0 | NOT AVAILABLE |
-| Non-fruit | 0 | NOT AVAILABLE |
-| Multiple | 0 | NOT AVAILABLE |
-| Other tổng | 0 | NOT AVAILABLE |
+**OTHER DATA INCOMPLETE**. Chưa có ảnh other được review label/source/license/group. Chưa chứng minh diversity về loại quả/vật thể/nền/ánh sáng/góc/khoảng cách.
 
-Inventory mẫu và collection guide yêu cầu nhiều fruit/object types, backgrounds, lighting, viewpoints, distances và sources. Chưa có bằng chứng tính đa dạng. Không tạo `other` thành production class thứ chín.
+## 5. Split và final test
 
-## 5. Split
+Giữ nguyên toàn bộ bảy field baseline: path, fruit, status, source, group_id, sha256, split. So sánh đủ 5869 hàng V5 với V3 đã pass. Không resplit hoặc sửa final test V3.
 
-Snapshot V2 metadata giữ train/val/test = 3519/1187/1163. Toàn bộ group ID và split V3 được bảo toàn.
+Group mới: union group+SHA toàn supported/other trước chia, seed42; component nối nhiều frozen splits bị từ chối. Pure-label component mới theo group 60/20/20; mixed mới vào train. Không ảnh mới trong candidate hiện tại nên không tạo split mới.
 
-Ảnh mới: union group/SHA xuyên hai manifest; component có split đã khóa kế thừa split đó; conflicting frozen splits dừng build. Component mới thuần nhãn reuse group split 60/20/20 seed 42; mixed-label components mới vào train. Không tự xóa ảnh/đổi nhãn. Với ít independent groups, báo bucket trống, không nhân bản để lấp split.
+**FINAL TEST NOT YET FROZEN** cho final test camera mới độc lập. Internal test V3 kế thừa vẫn giữ nguyên lock/split; không coi nó là camera test mới. Không train/tune/model select trên test.
 
-**FINAL TEST NOT YET FROZEN.** Giữ internal test V3 cố định không có nghĩa nó là final camera test mới độc lập. External V2 đã dùng gate calibration theo README. Chưa có protocol, collection log hoặc dataset final mới được khóa. Không dùng test để chọn augmentation, hyperparameters hoặc threshold.
+## 6. Duplicate audit và unmatched provenance
 
-## 6. Duplicate audit
+Baseline/V5: duplicate path = 0; duplicate SHA khai báo/thực đo = 0; cross-split SHA = 0. Decoded native RGB pixel identity cũng không có duplicate hoặc cross-split duplicate.
 
-| Check | V3 metadata | V2 metadata | Recomputed raw bytes |
-|---|---:|---:|---|
-| Duplicate path keys | 0 | 0 | NOT AVAILABLE |
-| Duplicate SHA256 keys | 0 | 0 | NOT AVAILABLE |
-| Cross-split SHA256 keys | 0 | 0 | NOT AVAILABLE |
+Raw partition được đối chiếu đủ filesystem và SHA:
+- Matched originals: 5869.
+- Duplicate originals: 75 file trùng baseline; không phải sample mới.
+- Unmatched: 9685.
+- Đã rehash cả 5869 originals, 5944 matched/duplicate raw và 9685 unmatched. Không sửa/xóa raw.
 
-SHA được đọc từ manifest và lock xác nhận tính toàn vẹn metadata. Không gọi đó là hash đã tính lại từ ảnh trong phiên này. Khi raw có, audit tính actual SHA; mismatch dừng gate/build. Duplicate cùng split được giữ và báo cáo; conflicting labels hoặc frozen split conflict yêu cầu review. Không xóa hàng loạt.
+| Unmatched classification | Số ảnh |
+|---|---:|
+| Exact duplicate | 17 |
+| Probable augmentation | 6502 |
+| Probable new image | 0 |
+| Unknown | 3166 |
+| Corrupt | 0 |
 
-## 7. Leakage audit
+17 exact duplicates là SHA-match với unmatched khác trong thứ tự canonical, không phải match baseline. 6502 probable augmentation có explicit transform filename và named parent cùng folder label; chưa chứng minh derivation bằng kiểm tra người. 3166 unknown gồm 2791 transform-marked không có named parent, 358 generic augmented không rõ parent, 17 unmarked thiếu provenance. Không mặc định unmatched là augmentation; **0 ảnh được admit**.
 
-Cross-split group keys = **0** cho V3 và V2 theo metadata. Audit kiểm tra thêm specimen ID xuất hiện nhiều group/split. Inventory camera yêu cầu evidence, một specimen ID cùng group; chưa có camera rows để kiểm chứng grouping thực tế.
+pHash legacy 63 DCT bits, Hamming ≤4: 920 unmatched có candidate gần baseline. Không dùng pHash để tự merge group, đổi label hoặc xác nhận specimen. Không có named-parent candidate hoặc pHash candidate set nối nhiều baseline splits trong review này; đây không chứng minh mọi near duplicate đã được tìm thấy. Crop/rotation có thể bị bỏ sót.
 
-**Physical specimen independence NOT VERIFIED.** V3 có 4786 group, không thể suy ra 4786 quả vật lý khác nhau. Report V3 cũng ghi `physical_specimen_independence_confirmed=false`. Exact SHA không phát hiện góc chụp khác, crop, rotate hoặc re-encoding. Perceptual review mới chưa thực hiện vì không có raw; không sao chép các cờ review V3 sang candidate mới.
+## 7. Leakage và physical specimen
+
+Cross-split group = 0; cross-split SHA thực đo = 0; cross-split decoded-pixel = 0. Kiểm tra trên đủ 5869 ảnh.
+
+Camera grouping: **NOT AVAILABLE** vì chưa có camera evidence. Không có specimen violations trong các hàng khai báo hiện tại không đồng nghĩa đã xác minh physical independence. Group ID khác nhau chưa chứng minh quả vật lý khác nhau; SHA/pHash không thể thay nhật ký thu thập.
 
 ## 8. Image quality
 
-| Metric | Kết quả dữ liệu thật |
-|---|---|
-| Decode errors | NOT AVAILABLE |
-| Low resolution | NOT AVAILABLE |
-| Low brightness | NOT AVAILABLE |
-| Blur | NOT AVAILABLE |
-| Dimensions/formats/channels/EXIF | NOT AVAILABLE |
+Đo đủ 5869 ảnh; missing/read error/SHA mismatch/decode error đều 0.
 
-Audit có width/height, aspect ratio, brightness, Laplacian variance, file size, original mode/channels, format, EXIF presence/orientation và hash status. Đo sau EXIF/RGB tại native resolution, trước resize/augmentation. Candidate thresholds: min side 96 px, brightness 35 trên 0–255, Laplacian variance 50. Chưa calibrate trên ảnh thật; không áp dụng production inference và không tự loại ảnh. `NOT_AVAILABLE`/`MISSING_FILE` không được biến thành `OK` hoặc count 0 cho lỗi chưa đo.
+| Flag | Ảnh |
+|---|---:|
+| Low resolution, min side <96 | 3 |
+| Low brightness, mean L <35 | 12 |
+| Blur candidate, Laplacian variance <50 | 1891 |
+| LOW_QUALITY, hợp các flag | 1896 |
+| OK | 3973 |
 
-## 9. Camera
+Flag có thể chồng nhau. Brightness là mean Pillow L 0–255; blur là variance Laplacian bốn lân cận, reflect boundary, trên native oriented RGB trước resize. Threshold diagnostic chưa được hiệu chỉnh bằng experiment; texture/nền/resolution ảnh hưởng blur. Không loại ảnh hoặc đổi inference quality threshold.
 
-Camera phone/laptop: **NOT AVAILABLE**. Lighting/background/viewpoint/distance/hard cases: **NOT AVAILABLE**. Camera grouping thực tế: **NOT VERIFIED**.
+| Class | Small | Dark | Blur flag | LOW_QUALITY | Brightness median | Blur median |
+|---|---:|---:|---:|---:|---:|---:|
+| Apple Fresh | 0 | 0 | 317 | 317 | 140.45 | 313.23 |
+| Apple Rotten | 0 | 0 | 409 | 409 | 176.57 | 55.10 |
+| Banana Fresh | 0 | 0 | 185 | 185 | 135.71 | 181.22 |
+| Banana Rotten | 0 | 0 | 235 | 235 | 152.00 | 79.27 |
+| Orange Fresh | 0 | 0 | 342 | 342 | 147.25 | 83.75 |
+| Orange Rotten | 0 | 0 | 242 | 242 | 142.31 | 93.89 |
+| Tomato Fresh | 0 | 0 | 50 | 50 | 124.02 | 440.45 |
+| Tomato Rotten | 3 | 12 | 111 | 116 | 137.14 | 252.32 |
 
-Kế hoạch thu: đủ tám tổ hợp, ưu tiên apple fresh/rotten, orange fresh, tomato rotten; 20–40 ảnh development khó là mục tiêu ban đầu, chưa phải số đã thu. Yêu cầu nhiều physical specimens, ánh sáng vàng/yếu, shadow, nền phức tạp, hand-held, tilted, close/far, small-in-frame, small damage/mild rot. Nhật ký specimen dùng để gắn group cho mọi view và lần chụp. Xem `docs/dataset_v2/README.md` và header inventory.
+Width 80–4160, height 95–4160. Formats JPEG 3247, PNG 2612, WEBP 10. Original modes RGB 4740, RGBA 1127, P 2; channels 3/4/1 tương ứng. EXIF present 1336; orientation thiếu 4662, 1:1197, 6:2, 3:8. Mode/channels là trước RGB conversion. JSON/CSV quality summary có min/quantiles/mean và resolution bins từng class.
 
-## 10. Preprocessing và kiến thức xử lý ảnh
+## 9. Camera và hard cases
 
-Production thực tế được reuse và giữ nguyên:
+Ảnh camera/source/lighting/background/hard-case có evidence: **NOT AVAILABLE**. Không suy ra camera từ EXIF hoặc small/dark flags. Header inventory và guide đã có, chưa có ảnh mới.
 
-`bytes → single-frame decode → EXIF transpose → RGB (alpha composite white) → white letterbox 224×224/BICUBIC → tensor → ImageNet normalization`.
+Kế hoạch development 20–40 ảnh khó là mục tiêu thu, chưa phải số đã có. Thu đủ tám tổ hợp, ưu tiên apple fresh/rotten, orange fresh, tomato rotten. Phone/laptop, ánh sáng vàng/yếu, bóng đổ, nền phức tạp, tay cầm, góc nghiêng, gần/xa, quả nhỏ, hỏng nhẹ/vết hỏng nhỏ. Thu nhiều physical specimens; dùng cùng group cho cùng quả ở mọi góc/session. Initial development train/val; final camera test riêng cần protocol và khóa trước tuning.
 
-- EXIF orientation là metadata yêu cầu xoay/lật ảnh từ camera; transpose trước đo kích thước và đưa vào model.
-- Pillow/torchvision dùng RGB. OpenCV mặc định BGR; đảo convention sai làm sai kênh màu. Audit dùng RGB production decoder, không thêm BGR conversion vào CNN.
-- Resize ép trực tiếp về hình vuông có thể méo aspect ratio. Letterbox resize giữ aspect ratio rồi pad; implementation production dùng `ImageOps.pad`, center và fill trắng.
-- Interpolation BICUBIC dùng trong letterbox; BILINEAR trong random affine. Không tự đổi sang kernel khác hay input size khác.
-- ToTensor tạo float CHW, scale 0–1; normalize `(x-mean)/std` với mean `[0.485,0.456,0.406]`, std `[0.229,0.224,0.225]` đúng checkpoint contract.
-- Data leakage là liên kết nội dung/specimen xuất hiện ở các split đánh giá và train. Group split gán toàn bộ group vào cùng split; SHA duplicate là byte identity, không chứng minh specimen identity.
-- Domain shift là khác biệt nguồn/camera/ánh sáng/nền giữa train và demo, cần dữ liệu thực tế và đánh giá độc lập. Chưa có experiment để nói đã giảm domain shift.
-- Class imbalance có thể ảnh hưởng recall từng lớp; TV2 quyết định sampler/loss sau protocol phù hợp.
-- CLAHE tăng contrast cục bộ, Gaussian Blur làm trơn, Sobel ước lượng gradient và Canny phát hiện cạnh. Chỉ diagnostic/baseline trong legacy; không thêm vào CNN production. Canny không xác định vùng hỏng; tăng contrast/blur có thể làm sai màu hoặc mất vết hỏng nhỏ, chưa có experiment chứng minh cải thiện.
+## 10. Preprocessing và kiến thức Xử lý ảnh
+
+Production pipeline giữ nguyên: image bytes → một frame → EXIF orientation correction → alpha composite trắng → RGB → letterbox224 → tensor → ImageNet normalize.
+
+- EXIF lưu orientation của camera; transpose trước đo/resize tránh hiển thị và input khác hướng.
+- RGB là thứ tự channel PIL/torch; OpenCV thường BGR, cần chuyển khi đi qua OpenCV. Không đổi convention CNN.
+- Resize đổi kích thước; resize ép vuông có thể méo aspect ratio. Letterbox bằng ImageOps.pad giữ tỷ lệ và thêm nền trắng, center.
+- BICUBIC cho letterbox, BILINEAR affine; interpolation ảnh hưởng chi tiết cục bộ, không tự đổi baseline.
+- Tensor chuyển HWC uint8 thành CHW float 0–1; ImageNet normalize (x-mean)/std, mean [0.485,0.456,0.406], std [0.229,0.224,0.225].
+- Data leakage gồm byte/near duplicate hoặc cùng specimen qua splits. Group split giữ nhóm chung nhưng chỉ mạnh bằng evidence grouping.
+- Duplicate SHA là byte-identical; decoded-pixel equality phát hiện encoding khác nhưng RGB giống; pHash chỉ tạo candidate.
+- Domain shift là khác camera/nền/ánh sáng/khoảng cách so với nguồn training. Candidate hiện chưa thêm domain camera mới.
+- Class imbalance là phân bố nhãn không đều, báo tỷ trọng để TV2 cân nhắc experiment.
+
+CLAHE tăng local contrast; Gaussian Blur làm mượt; Canny/Sobel biểu diễn biên/gradient, có thể giữ diagnostic/baseline/visualization. Không đưa vào CNN pipeline; Canny không xác định vùng hỏng; chưa có bằng chứng tăng contrast tăng accuracy.
 
 ## 11. Augmentation
 
-Train hiện tại: letterbox → RandomHorizontalFlip (p=0.5) → RandomAffine degrees=15, translate=(0.04,0.04), scale=(0.9,1.02), BILINEAR, trắng → ColorJitter brightness=0.12, contrast=0.12, saturation=0.08, hue=0.01 → tensor/normalize.
+Production train giữ nguyên: letterbox → horizontal flip p0.5 → affine ±15°, translate0.04, scale0.9–1.02, BILINEAR trắng → ColorJitter brightness/contrast0.12, saturation0.08, hue0.01 → tensor/normalize.
 
-Val/test/inference dùng `training=False`: không flip/affine/jitter ngẫu nhiên. Đã đọc train/eval/inference call sites. Không đổi augmentation, không bật MixUp/CutMix, không chạy augmentation ablation hoặc tuyên bố cải thiện accuracy. Bộ test production tensor-equivalence chưa thực thi vì thiếu torch và raw images.
+Val/test/inference: letterbox → tensor/normalize, không augmentation ngẫu nhiên. Không bật MixUp/CutMix, không đổi image size/normalization hoặc tune augmentation trên test. Không tạo experiment augmentation mới khi chưa có ảnh camera.
 
-## 12. Other / Unsupported
+## 12. Other / Unsupported và shared contract
 
-Other dùng manifest riêng với `path,category,subcategory,source,group_id,sha256,split` và capture/quality sidecars. Không có fruit/status labels production. Hai manifest được kiểm tra group/SHA cùng nhau; không đánh giá độc lập hai tập rồi bỏ qua leakage giữa chúng. Schema/lock mới chỉ phục vụ chuẩn bị dữ liệu; integration model/gate do TV2/TV3 thống nhất sau.
+Other là data category riêng, không class thứ chín. Không sửa CLASSES, output dimension, loss, inference threshold, prediction contract.
 
-## 13. Reproducibility và testing
+TV2 dùng V5 supported manifest/quality/lock và adapter trong `freshlens_ai/data/dataset_v2.py`, image root originals; production training cần integration TV2 riêng, không tự nhận lock candidate. TV3 dùng other_manifest riêng (hiện empty), provenance report và camera protocol khi có dữ liệu. Nhóm cần thống nhất version/root/mapping, tám label indices, split val, group/specimen evidence, source/license, development vs final-test protocol. Không merge/cherry-pick hoặc nhắn branch khác.
 
-Commands chạy từ repo root, xem chi tiết và placeholders image root tại `docs/dataset_v2/README.md`:
+## 13. Reproducibility, testing và limitations
 
-```powershell
-python scripts/dataset_v2.py audit --data data/cnn_dataset_v3 --root . --report reports/tv1_baseline_audit.json --quality-csv reports/tv1_baseline_quality.csv
-python scripts/dataset_v2.py build --baseline data/cnn_dataset_v3 --inventory docs/dataset_v2/capture_inventory.csv --output data/cnn_dataset_v4
-python scripts/dataset_v2.py audit --data data/cnn_dataset_v4 --report reports/tv1_v4_audit.json --quality-csv reports/tv1_v4_quality.csv
-```
+Commands đầy đủ audit/build/provenance/duplicate/group/quality tại `docs/dataset_v2/README.md`. Duplicate/leakage/quality dùng chung audit CLI, không tạo script trùng chức năng.
 
-Cùng lệnh `audit` kiểm tra duplicate, group/specimen leakage và quality. Khi có raw, thêm `--root '<IMAGE_ROOT>'`; khi thêm dữ liệu, dùng inventory thật và version output mới. Exit **2** cho incomplete verification, **1** cho errors, **0** cho metadata/byte/decode đã kiểm chứng; không dùng exit 0 để chứng minh acceptance đầy đủ.
+Artifacts local:
+- reports/tv1_v3_originals_audit.json
+- reports/tv1_v3_originals_quality.csv
+- reports/tv1_unmatched_provenance.json
+- reports/tv1_unmatched_provenance.csv
+- reports/tv1_quality_summary.json
+- reports/tv1_quality_summary.csv
+- reports/tv1_leakage_audit.json
 
-Các report audit metadata chia sẻ tại `docs/dataset_v2/baseline_audit.json` và `docs/dataset_v2/candidate_audit.json`. Snapshot data và quality CSV dưới `data/`/`reports/` là local ignored outputs, không commit raw/cache/artifacts.
+V5 local: manifest.csv, other_manifest.csv, image_quality.csv, dataset_report.json, dataset_lock.json. Snapshot audit review được cập nhật trong docs/dataset_v2/baseline_audit.json và candidate_audit.json. Không commit raw/candidate/reports/cache/checkpoint.
 
-Tests TV1: kiểm tra giữ baseline bytes, immutable outputs, lock tampering, split deterministic khi đổi thứ tự input, transitive group/SHA inheritance, conflicting labels/splits, global supported-other grouping, physical specimen violations, paths unsafe, EXIF/alpha/grayscale, dark/blur/small/broken/missing/hash mismatch. Pixel test fixtures chỉ có trong thư mục tạm, không được dùng như dữ liệu đời thực.
+Testing trên Python C314:
+- `python -m pytest tests/test_dataset_v2.py -q`: **27 passed**.
+- Legacy step2_split: **24 passed**; step2b_grouping: **16 passed**.
+- `python -m pytest -q`: **29 passed, 1 error**.
+- Candidate smoke: đủ baseline fields 5869 hàng giữ nguyên; lock V3/V4/V5 đạt; 12 mẫu đủ tám labels, ba splits và alias tạo tensor 3×224×224 finite, validation/test deterministic.
 
-TV1 suite: 16 tests PASS. Legacy split suite: 24 tests PASS. Legacy grouping suite: 16 tests PASS. Tổng 56 tests PASS. Production `tests.refactor.TEST_DATA_REFACTOR` không chạy được: `ModuleNotFoundError: torch`; raw sample cũng chưa có. Lần đầu các suite dùng sandbox TEMP bị PermissionError; chạy lại với TEMP/TMP trong workspace và không đổi test cũ đã pass. Chưa phát hiện regression TV1; không tuyên bố toàn bộ production suite pass.
+**OUT OF SCOPE**: tests/refactor/TEST_TRAINING_REFACTOR.py::test_optimizer, thiếu fixture stage khi pytest collect helper như test. Owner đề xuất TV2 (training/refactor). Lỗi có sẵn, không do TV1; giữ nguyên test, không tạo fixture giả và không sửa training/model. Không có REGRESSION DETECTED còn tồn tại trong test TV1.
 
-## 14. Limitations và OUT OF SCOPE
+Giới hạn còn lại:
+- Không có camera/hard-case/other mới; diversity chưa đạt.
+- Không kiểm chứng physical specimen independence hoặc chất lượng label bằng review người.
+- 14 SHA-matched physical filenames có transform marker; giữ nguyên baseline, không kết luận độc lập.
+- 3166 unmatched còn unknown; probable augmentation cũng cần review trước sử dụng.
+- Không có final camera test mới độc lập/frozen; không claim cải thiện accuracy/domain shift.
+- Quality threshold là candidate diagnostic; giữ 1896 flagged images, không tự xóa.
+- Root/image bytes và catalog cần còn sẵn có để reproduce; V5 metadata lock không phải production V3 lock.
 
-- Raw baseline unavailable, chưa đo quality/decode/EXIF hoặc tính lại image hashes.
-- Camera/hard cases/other chưa có; other diversity và specimen independence chưa xác minh.
-- Candidate hiện chỉ chứa baseline metadata, không có dữ liệu mới; chưa production-loader compatible hoặc ready for training.
-- Final camera test chưa được thu/khóa; External V2 đã calibration.
-- Quality thresholds chưa được thử nghiệm; near-duplicate review và augmentation ablation chưa thực hiện.
-- Môi trường Python thiếu torch/torchvision, nên production tensor-equivalence/integration chưa chạy.
-
-| OUT OF SCOPE — file | Problem | Reason | Suggested owner |
-|---|---|---|---|
-| `scripts/sync_cnn_dataset.py`, `scripts/publish_cnn_dataset.py` | Import `scripts.db_manager`, nhưng module đó không có trong `scripts/` hiện tại; helper chỉ có trong legacy | Khôi phục cloud infrastructure/credentials không thuộc offline dataset audit này; không tự di chuyển legacy/cloud code | TV4/integration + người quản lý dữ liệu cloud |
-| `freshlens_ai/data/locked_dataset.py` và training consumers | V3 loader yêu cầu report `2.1.0`, recomputed candidates và pilot-ready; candidate lock mới không đáp ứng | Không được giả định evidence hoặc nới gate để train candidate chưa hoàn thiện | TV1 phối hợp TV2/TV3 khi đủ dữ liệu |
-| `docs/TEAM_ASSIGNMENT.md` | Nội dung phân công cũ còn tập trung SVM, khác yêu cầu CNN hiện tại | Không refactor tài liệu toàn nhóm theo tài liệu cũ | TV4/docs coordinator |
-
-## 15. Handoff và acceptance
-
-TV2: baseline V3 vẫn là production data; đọc report + `data/cnn_dataset_v4/manifest.csv`, quality sidecar và guide để chuẩn bị candidate experiment sau khi có raw. Không train snapshot hiện tại như dataset đã hoàn thiện. TV3: dùng schema `other_manifest.csv` và capture metadata cho future development/calibration, giữ tám class và prediction contract. Không merge/cherry-pick branch TV3.
-
-Shared contract cần thống nhất: image root tương đối, byte SHA, `val`, supported/other separation, global group/specimen ID, evidence/provenance, loader/lock candidate, quality measurement version và quyền giữ final test độc lập. Trước merge phải review thay đổi data API lazy import.
-
-- [x] Baseline metadata preserved; snapshot độc lập; đủ tám supported metadata combinations.
-- [x] Manifest/SHA/group metadata; zero declared cross-split SHA/group; reproducible audit/build.
-- [x] Quality tooling + unavailable status; preprocessing/augmentation review; model/training/inference/UI giữ nguyên.
-- [ ] Raw baseline restored and image hashes/decode/quality verified.
-- [ ] Real camera images, hard cases, diverse other and physical specimen evidence collected.
-- [ ] New perceptual/grouping review; final independent camera test frozen.
-- [ ] Candidate loader handoff agreed; production data-equivalence test executed with valid environment/raw.
-
-TV1 **chưa đạt nghiệm thu dữ liệu đầy đủ**; phần công cụ, audit metadata và documentation sẵn sàng để tiếp tục sau khi thu/khôi phục ảnh thật.
+TV1 đã hoàn tất công cụ/audit/candidate baseline-only/report và data adapter. Acceptance camera, hard cases, other diversity, specimen evidence và final-test protocol **chưa hoàn tất**.
