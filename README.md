@@ -167,7 +167,7 @@ flowchart LR
 6. Unsupported inputs can be rejected instead of forcing them into one of
    the four supported fruit categories.
 
-## 1. Supported scope
+## Supported scope
 
 Production V2 supports 4 fruit types and 2 visible conditions:
 
@@ -193,7 +193,7 @@ tomato::rotten
 
 FreshLens analyzes visible image cues only. It is **not** a food-safety, laboratory, or edibility certification system.
 
-## 2. Production architecture
+## Production architecture
 
 ```text
 Image upload / camera
@@ -239,7 +239,7 @@ The deployed decoder is intentionally **fruit-first**:
 
 Do not replace this rule with raw 8-class `argmax` unless a new experiment is explicitly designed and validated.
 
-## 3. Repository structure
+## Repository structure
 
 ```text
 FreshLens/
@@ -293,7 +293,7 @@ The `legacy/` directory is retained only for reproducibility,
 behavior-equivalence testing, and historical reference. It is not part
 of the production runtime.
 
-## 4. Environment
+## Environment
 
 Minimum project metadata requires Python 3.10+. The current validated Windows development environment uses:
 
@@ -343,7 +343,7 @@ Legacy SVM dependencies are separated into:
 
 They are not required by the production CNN V2 runtime.
 
-## 5. Run the application
+## Run the application
 
 The easiest Windows launcher is:
 
@@ -376,7 +376,7 @@ models/cnn_efficientnet_b0/open_set_gate.json
 
 Do not rebuild or replace the production open-set gate casually. The gate must match the checkpoint metadata.
 
-## 6. Predict one image from the command line
+## Predict one image from the command line
 
 ```cmd
 .\.venv\Scripts\python.exe PREDICT_CNN_V2.py --image "D:\path\to\fruit.jpg"
@@ -390,7 +390,7 @@ Choose CUDA explicitly when desired:
 
 The command prints a JSON result containing fruit, condition, fruit probability, conditional condition probability, and joint-class scores.
 
-## 7. Training
+## Training
 
 Inspect all training options first:
 
@@ -430,7 +430,7 @@ Important training characteristics of the validated pipeline:
 
 Use `--from-scratch` only for controlled testing / ablation.
 
-## 8. Evaluation
+## Evaluation
 
 Inspect the evaluator arguments:
 
@@ -456,7 +456,7 @@ macro-F1                       : 92.45%
 
 The External V2 set was later used for open-set calibration, so it must no longer be described as a future untouched final test set.
 
-## 9. Open-set gate
+## Open-set gate
 
 The current production gate is metadata version:
 
@@ -485,7 +485,7 @@ To inspect the builder options:
 
 Rebuilding the gate changes the calibrated artifact. Do it only as a deliberate experiment with a documented calibration dataset.
 
-## 10. Tests
+## Tests
 
 The modular refactor has dedicated equivalence tests for data, model construction, training, evaluation, orchestration, inference, open-set behavior, predictor CLI, and Streamlit app state.
 
@@ -508,7 +508,7 @@ The full suite additionally audits modular import boundaries and performs a prod
 
 Passing the software tests verifies implementation consistency. It does **not** by itself prove generalization to every real-world camera/domain condition.
 
-## 11. Dataset notes
+## Dataset notes
 
 The locked CNN dataset currently contains 5,869 records:
 
@@ -522,7 +522,7 @@ The split is fixed with seed 42. Dataset images themselves are not intended to b
 
 A known limitation is that physical-specimen independence is not formally confirmed for the current locked dataset. This should be stated when reporting experimental validity.
 
-## 12. Production vs legacy
+## Production vs legacy
 
 Use these for normal CNN V2 work:
 
@@ -541,7 +541,7 @@ Do **not** use `legacy/svm/` as the production CNN implementation. It contains t
 
 The `legacy/development/` tree preserves historical data-preparation stages, external-test tooling, and the pre-refactor CNN/open-set implementations. Refactor-equivalence tests intentionally compare V2 behavior against selected archived files, so the archive should remain read-only unless those tests are intentionally redesigned.
 
-## 13. Security and repository hygiene
+## Security and repository hygiene
 
 Do not commit:
 
@@ -560,7 +560,7 @@ scripts/test_cloudinary.py
 
 `.env.example` is intentionally kept as a safe template.
 
-## 14. Current limitations
+## Current limitations
 
 - Supported fruit scope is limited to apple, banana, orange, and tomato.
 - The system assumes one main fruit per image.
@@ -569,7 +569,7 @@ scripts/test_cloudinary.py
 - Domain shift remains a major risk: phone/camera/background/lighting conditions can reduce accuracy compared with internal data.
 - The current external V2 set is calibration data after gate construction, not an untouched final benchmark.
 
-## 15. Recommended next development stages
+## Recommended next development stages
 
 After the repository cleanup is complete, future work should be done as new controlled experiments rather than silently changing the production baseline:
 
