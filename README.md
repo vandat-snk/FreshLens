@@ -11,6 +11,29 @@ FreshLens is an image-classification project for recognizing the **fruit type** 
 
 The current production pipeline is the modular **CNN V2** implementation based on **EfficientNet-B0 + PyTorch**. The older SVM and step-by-step development folders are retained only for reference, audit, and behavior-equivalence testing.
 
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Quick Start](#quick-start)
+- [Demo](#demo)
+- [Results](#results)
+- [Architecture](#architecture)
+- [Supported Scope](#supported-scope)
+- [Production Architecture](#production-architecture)
+- [Repository Structure](#repository-structure)
+- [Environment](#environment)
+- [Run the Application](#run-the-application)
+- [Predict One Image from the Command Line](#predict-one-image-from-the-command-line)
+- [Training](#training)
+- [Evaluation](#evaluation)
+- [Open-set Gate](#open-set-gate)
+- [Tests](#tests)
+- [Dataset Notes](#dataset-notes)
+- [Production vs Legacy](#production-vs-legacy)
+- [Security and Repository Hygiene](#security-and-repository-hygiene)
+- [Current Limitations](#current-limitations)
+- [Recommended Next Development Stages](#recommended-next-development-stages)
+
 ## Key Features
 
 - **Fruit recognition** for Apple, Banana, Orange, and Tomato.
