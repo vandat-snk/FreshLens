@@ -250,7 +250,7 @@ with left:
     st.image(
         image_bytes,
         caption="Ảnh đầu vào",
-        use_container_width=True,
+        width="stretch",
     )
 
 
@@ -258,7 +258,7 @@ with right:
     if st.button(
         "🔎 Phân tích ảnh",
         type="primary",
-        use_container_width=True,
+        width="stretch",
     ):
         try:
             with st.spinner(
