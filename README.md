@@ -1,5 +1,12 @@
 # FreshLens CNN V2
 
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.10-EE4C2C?logo=pytorch&logoColor=white)
+![CUDA](https://img.shields.io/badge/CUDA-12.8-76B900?logo=nvidia&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)
+![Model](https://img.shields.io/badge/Model-EfficientNet--B0-blue)
+![Status](https://img.shields.io/badge/Pipeline-Verified-success)
+
 FreshLens is an image-classification project for recognizing the **fruit type** and the visible **fresh / rotten condition** of one main fruit in a photo.
 
 The current production pipeline is the modular **CNN V2** implementation based on **EfficientNet-B0 + PyTorch**. The older SVM and step-by-step development folders are retained only for reference, audit, and behavior-equivalence testing.
