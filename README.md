@@ -4,6 +4,30 @@ FreshLens is an image-classification project for recognizing the **fruit type** 
 
 The current production pipeline is the modular **CNN V2** implementation based on **EfficientNet-B0 + PyTorch**. The older SVM and step-by-step development folders are retained only for reference, audit, and behavior-equivalence testing.
 
+## Demo
+
+### Fruit and freshness prediction
+
+![FreshLens prediction](docs/assets/01_prediction.png)
+
+FreshLens recognizes the supported fruit type and predicts its
+freshness condition from an uploaded image.
+
+### Camera inference
+
+![FreshLens camera inference](docs/assets/02_camera.png)
+
+The Streamlit interface supports direct image capture from the
+device camera.
+
+### Unsupported-input rejection
+
+![FreshLens open-set rejection](docs/assets/03_open_set_rejection.png)
+
+The open-set gate can reject images that are insufficiently similar
+to the supported fruit classes.
+
+
 ## 1. Supported scope
 
 Production V2 supports 4 fruit types and 2 visible conditions:
