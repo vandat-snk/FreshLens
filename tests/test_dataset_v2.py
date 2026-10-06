@@ -180,6 +180,162 @@ class DatasetV2Tests(unittest.TestCase):
         self.assertFalse(report["metadata_valid"])
         self.assertIn("physical1", report["camera"]["grouping_violations"]["specimens_across_splits"])
 
+    def test_prefix_mapping_reads_original_and_preserves_manifest_path(self):
+        from freshlens_ai.data.dataset_audit import mapped_image_path
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            path = root / "apple/fresh/a.png"
+            path.parent.mkdir(parents=True)
+            Image.new("RGB", (120, 100), "white").save(path)
+            row = record("raw/apple/fresh/a.png", split="train", digest=file_sha256(path))
+            original_row = dict(row)
+            self.assertEqual(inspect_image(root, row)["decode_status"], "MISSING_FILE")
+            report, quality = audit_dataset([row], root=root, strip_prefix="raw", fingerprints=True)
+            self.assertTrue(report["all_image_files_verified"])
+            self.assertEqual(quality[0]["resolved_relative_path"], "apple/fresh/a.png")
+            self.assertEqual(quality[0]["path"], row["path"])
+            self.assertEqual(row, original_row)
+            self.assertEqual(mapped_image_path("raw\\apple\\fresh\\a.png", "raw"), "apple/fresh/a.png")
+
+    def test_sha_catalog_alias_resolves_without_changing_baseline(self):
+        from freshlens_ai.data.dataset_audit import load_path_mapping, SUPPORTED_COLUMNS
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "apple/fresh"
+            folder.mkdir(parents=True)
+            Image.new("RGB", (120, 100), "white").save(folder / "actual.png")
+            row = record("raw/apple/fresh/missing.png", split="train", digest=file_sha256(folder / "actual.png"))
+            entry = dict(raw_path="data/raw/cnn_v3/apple/fresh/actual.png", manifest_path=row["path"],
+                         **{k:row[k] for k in SUPPORTED_COLUMNS[1:]})
+            catalog = root / "existing_catalog.csv"
+            columns = ("raw_path", "manifest_path", *SUPPORTED_COLUMNS[1:])
+            write_csv(catalog, [entry], columns)
+            mapping = load_path_mapping(catalog, [row], "raw")
+            report, quality = audit_dataset([row], root=root, strip_prefix="raw", path_overrides=mapping)
+            self.assertTrue(report["all_image_files_verified"])
+            self.assertEqual(quality[0]["resolved_relative_path"], "apple/fresh/actual.png")
+            self.assertEqual(row["path"], "raw/apple/fresh/missing.png")
+            entry["sha256"] = "f" * 64
+            write_csv(catalog, [entry], columns)
+            with self.assertRaisesRegex(ValueError, "metadata disagrees"):
+                load_path_mapping(catalog, [row], "raw")
+
+    def test_prefix_matches_components_and_rejects_unsafe_mapping(self):
+        from freshlens_ai.data.dataset_audit import mapped_image_path
+        for path, prefix in (("raw2/a.png", "raw"), ("raw", "raw"), ("raw/a.png", "../raw"),
+                             ("raw/a.png", "/raw"), ("../raw/a.png", "raw")):
+            with self.subTest(path=path, prefix=prefix), self.assertRaises(ValueError):
+                mapped_image_path(path, prefix)
+        self.assertEqual(mapped_image_path("a.png"), "a.png")
+
+    def test_mapped_sha_mismatch_and_decode_error_remain_errors(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            Image.new("RGB", (10, 20), "white").save(root / "a.png")
+            report, _ = audit_dataset([record("raw/a.png", split="train")], root=root, strip_prefix="raw")
+            self.assertEqual(report["quality"]["sha256_mismatches"], 1)
+            self.assertFalse(report["all_image_files_verified"])
+            (root / "broken.png").write_bytes(b"broken")
+            row = record("raw/broken.png", split="train", digest=file_sha256(root / "broken.png"))
+            report, _ = audit_dataset([row], root=root, strip_prefix="raw")
+            self.assertEqual(report["quality"]["decode_errors"], 1)
+            self.assertEqual(report["quality"]["missing_files"], 0)
+
+    def test_quality_summary_uses_actual_flags_and_measurements(self):
+        from freshlens_ai.data.dataset_audit import quality_summary
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            Image.new("RGB", (40, 30), "black").save(root / "a.png")
+            row = record("a.png", split="train", digest=file_sha256(root / "a.png"))
+            report, quality = audit_dataset([row], root=root)
+            summary, flat = quality_summary([row], quality)
+            a = summary["class_summaries"]["apple::fresh"]
+            self.assertEqual(a["low_quality"], 1)
+            self.assertEqual(a["low_resolution"], 1)
+            self.assertEqual(a["measurements"]["brightness"]["mean"], 0)
+            self.assertEqual(a["resolution_by_min_side"]["under_96"], 1)
+            self.assertEqual(a["formats"], {"PNG": 1})
+            self.assertEqual(sum(x["images"] for x in flat), 1)
+
+    def test_provenance_marker_without_available_parent_stays_unknown(self):
+        from freshlens_ai.data.dataset_provenance import classify_evidence
+        self.assertEqual(classify_evidence("OK", known_transform=True)[0], "unknown")
+        self.assertEqual(classify_evidence("OK", named_parent=True)[0], "unknown")
+        self.assertEqual(classify_evidence("OK", known_transform=True, named_parent=True)[0], "probable_augmentation")
+
+    def test_provenance_exact_pixels_corrupt_and_explicit_new_evidence(self):
+        from freshlens_ai.data.dataset_provenance import classify_evidence
+        self.assertEqual(classify_evidence("OK", byte_reference="a.png")[0], "exact_duplicate")
+        self.assertEqual(classify_evidence("OK", pixel_reference="a.png")[0], "exact_duplicate")
+        self.assertEqual(classify_evidence("DECODE_ERROR", byte_reference="a.png")[0], "corrupt")
+        self.assertEqual(classify_evidence("OK", verified_new_provenance=True)[0], "probable_new_image")
+
+    def test_provenance_catalog_paths_cannot_escape_raw_root(self):
+        from freshlens_ai.data.dataset_provenance import raw_relative_path
+        with tempfile.TemporaryDirectory() as temporary:
+            self.assertEqual(raw_relative_path(temporary, "apple/fresh/a.png"), "apple/fresh/a.png")
+            for path in ("../a.png", "C:/a.png", "data/raw/another/a.png"):
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    raw_relative_path(temporary, path)
+
+    def test_provenance_end_to_end_never_admits_unverified_samples(self):
+        from unittest.mock import patch
+        from freshlens_ai.data.dataset_audit import QUALITY_COLUMNS, SUPPORTED_COLUMNS
+        from freshlens_ai.data.dataset_provenance import analyze_provenance
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            raw, originals = root / "raw", root / "originals"
+            raw_folder, original_folder = raw / "apple/fresh", originals / "apple/fresh"
+            raw_folder.mkdir(parents=True); original_folder.mkdir(parents=True)
+            name = "Screen Shot 2020-01-01 at 12.00.00 AM.png"
+            image = Image.fromarray(np.random.default_rng(5).integers(0, 256, (100, 120, 3), dtype=np.uint8))
+            image.save(raw_folder / name); image.save(original_folder / name)
+            baseline = record("raw/apple/fresh/" + name, split="train", digest=file_sha256(original_folder / name))
+            image.transpose(Image.Transpose.FLIP_LEFT_RIGHT).save(raw_folder / ("horizontal_flip_" + name))
+            Image.new("RGB", (101, 121), "green").save(raw_folder / "mystery.png")
+            (raw_folder / "broken.jpg").write_bytes(b"broken")
+            q = inspect_image(originals, baseline, strip_prefix="raw", fingerprints=True)
+            write_csv(root / "quality.csv", [q], QUALITY_COLUMNS)
+            catalog_columns = ("raw_path", "manifest_path", *SUPPORTED_COLUMNS[1:])
+            write_csv(root / "matched.csv", [dict(raw_path="apple/fresh/" + name, manifest_path=baseline["path"], **{k:baseline[k] for k in SUPPORTED_COLUMNS[1:]})], catalog_columns)
+            write_csv(root / "duplicates.csv", [], catalog_columns)
+            candidates = [dict(raw_path="apple/fresh/" + filename, sha256=file_sha256(raw_folder / filename), extension=Path(filename).suffix)
+                          for filename in ("horizontal_flip_" + name, "mystery.png", "broken.jpg")]
+            write_csv(root / "unmatched.csv", candidates, ("raw_path", "sha256", "extension"))
+            with patch("freshlens_ai.data.dataset_provenance.baseline_snapshot", return_value=([baseline], {}, {})):
+                report, rows = analyze_provenance(root, originals, raw, root / "quality.csv", root / "matched.csv",
+                                                  root / "duplicates.csv", root / "unmatched.csv", progress=False)
+            self.assertEqual(report["classification_counts"]["probable_augmentation"], 1)
+            self.assertEqual(report["classification_counts"]["unknown"], 1)
+            self.assertEqual(report["classification_counts"]["corrupt"], 1)
+            self.assertTrue(report["partition_verified"])
+            self.assertEqual(report["admitted_new_samples"], 0)
+            self.assertTrue(all(not r["eligible_for_candidate"] for r in rows))
+
+    def test_candidate_loader_maps_paths_in_memory_and_checks_readiness(self):
+        from freshlens_ai.constants import CLASSES
+        from freshlens_ai.data.dataset_v2 import load_candidate_dataset
+        baseline = Path(__file__).resolve().parents[1] / "data/cnn_dataset_v3"
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "candidate"
+            build_dataset(baseline, output, strip_prefix="raw")
+            with self.assertRaisesRegex(ValueError, "not ready"):
+                load_candidate_dataset(output)
+            rows, identity = load_candidate_dataset(output, require_ready=False)
+            self.assertEqual(rows[0]["path"], rows[0]["manifest_path"].removeprefix("raw/"))
+            self.assertEqual(rows[0]["target"], CLASSES.index(rows[0]["fruit"] + "::" + rows[0]["status"]))
+            self.assertEqual(identity["image_path_mapping"]["strip_prefix"], "raw")
+            with (output / "manifest.csv").open(encoding="utf-8-sig") as handle:
+                self.assertTrue(next(csv.DictReader(handle))["path"].startswith("raw/"))
+
+    def test_required_image_build_refuses_unverified_candidate_without_output(self):
+        baseline = Path(__file__).resolve().parents[1] / "data/cnn_dataset_v3"
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "candidate"
+            with self.assertRaisesRegex(ValueError, "Verified image build"):
+                build_dataset(baseline, output, strip_prefix="raw", require_images=True)
+            self.assertFalse(output.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
