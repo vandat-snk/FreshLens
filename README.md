@@ -243,51 +243,55 @@ Do not replace this rule with raw 8-class `argmax` unless a new experiment is ex
 
 ```text
 FreshLens/
-|
-|-- freshlens_ai/                  # Production modular package
-|   |-- data/                      # Dataset loading, transforms, validation
-|   |-- models/                    # EfficientNet-B0, checkpoint handling
-|   |-- training/                  # Training engine
-|   |-- evaluation/                # Metrics and evaluation
-|   |-- inference/                 # Prediction, open-set gate, app state
-|   |-- utils/                     # Shared helpers
-|   |-- constants.py
-|   `-- errors.py
-|
-|-- TRAIN_CNN_V2.py                # Production training entry point
-|-- EVALUATE_CNN_V2.py             # Production evaluation entry point
-|-- PREDICT_CNN_V2.py              # Single-image prediction CLI
-|-- BUILD_OPENSET_GATE_V2.py       # Open-set gate builder
-|-- APP_CNN_V2.py                  # Streamlit production app
-|-- RUN_APP_V2.cmd
-|-- run_app.bat                    # Convenience launcher -> APP_CNN_V2.py
-|-- run_train.bat                  # Convenience launcher -> TRAIN_CNN_V2.py
-|
-|-- models/
-|   `-- cnn_efficientnet_b0/
-|       |-- best.pt
-|       |-- open_set_gate.npz
-|       `-- open_set_gate.json
-|
-|-- data/                           # Local dataset artifacts; ignored where appropriate
-|-- reports/                        # Generated reports; local/ignored
-|-- docs/
-|-- scripts/
-|
-|-- tests/
-|   |-- integration/
-|   |   `-- TEST_FULL_PIPELINE_V2.py
-|   `-- refactor/
-|       `-- TEST_*_REFACTOR.py
-|
-|-- requirements.txt
-|-- requirements-torch-cu128.txt
-|-- requirements-db.txt
-|-- requirements-legacy.txt
-`-- pyproject.toml
+├── freshlens_ai/                  # Production CNN V2 package
+│   ├── data/                      # Dataset loading and preprocessing
+│   ├── models/                    # EfficientNet-B0 and checkpoint utilities
+│   ├── training/                  # Training engine
+│   ├── evaluation/                # Metrics and evaluation helpers
+│   ├── inference/                 # Prediction and open-set runtime
+│   └── utils/                     # Shared utilities
+│
+├── tests/
+│   ├── refactor/                  # Behavior-equivalence tests
+│   └── integration/               # Full pipeline integration verification
+│
+├── models/
+│   └── cnn_efficientnet_b0/       # Production checkpoint and open-set gate
+│
+├── data/
+│   └── cnn_dataset_v3/            # Locked dataset metadata and manifest
+│
+├── docs/                          # Documentation and demo screenshots
+├── scripts/                       # Dataset publishing / synchronization tools
+│
+├── legacy/
+│   ├── development/               # Archived pre-refactor CNN development stages
+│   └── svm/                       # Archived SVM / handcrafted-feature baseline
+│
+├── APP_CNN_V2.py                 # Streamlit application
+├── TRAIN_CNN_V2.py               # Training entry point
+├── EVALUATE_CNN_V2.py            # Evaluation entry point
+├── PREDICT_CNN_V2.py             # Single-image prediction CLI
+├── BUILD_OPENSET_GATE_V2.py      # Open-set gate builder
+│
+├── run_app.bat                    # Windows app launcher
+├── run_train.bat                  # Windows training launcher
+├── RUN_APP_V2.cmd                 # Direct Streamlit launcher
+│
+├── requirements.txt               # Shared dependencies
+├── requirements-torch-cu128.txt   # Validated CUDA 12.8 PyTorch build
+├── requirements-db.txt            # Optional DB / Cloudinary dependencies
+├── requirements-legacy.txt        # Legacy SVM dependencies
+├── pyproject.toml
+└── README.md
 ```
 
-Historical implementations are archived under `legacy/`. See [`docs/LEGACY.md`](docs/LEGACY.md) before using them.
+The active production implementation is contained in `freshlens_ai/` and
+the root V2 entry points.
+
+The `legacy/` directory is retained only for reproducibility,
+behavior-equivalence testing, and historical reference. It is not part
+of the production runtime.
 
 ## 4. Environment
 
