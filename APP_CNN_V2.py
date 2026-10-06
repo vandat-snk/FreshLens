@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import torch
 import streamlit as st
+import time
 
 from freshlens_ai.constants import PROJECT_DIR
 from freshlens_ai.inference import (
@@ -49,6 +50,168 @@ STATUS_VI = {
     "fresh": "Tươi",
     "rotten": "Hỏng / có dấu hiệu hỏng",
 }
+
+QUALITY_GUIDANCE = [
+    "Chỉ có một quả chính trong ảnh",
+    "Đảm bảo đủ ánh sáng",
+    "Đưa quả lại gần camera hơn",
+    "Không cần nền trắng",
+]
+
+
+def result_status(result):
+    status = result.get(
+        "status"
+    )
+
+    if status in {
+        "success",
+        "unsupported",
+        "quality_rejected",
+    }:
+        return status
+
+    rejection_type = result.get(
+        "rejection_type"
+    )
+
+    if rejection_type in {
+        "quality_rejection",
+        "quality_rejected",
+    }:
+        return "quality_rejected"
+
+    if result.get(
+        "is_supported"
+    ) is False:
+        return "unsupported"
+
+    if result.get(
+        "supported"
+    ) is False:
+        return "unsupported"
+
+    return "success"
+
+
+def render_latency(result):
+    latency_ms = result.get(
+        "latency_ms"
+    )
+
+    if latency_ms is None:
+        return
+
+    st.caption(
+        f"Latency: {latency_ms:.0f} ms"
+    )
+
+
+def display_fruit(value):
+    key = str(
+        value
+    ).lower()
+
+    return FRUIT_VI.get(
+        key,
+        value,
+    )
+
+
+def display_condition(value):
+    key = str(
+        value
+    ).lower()
+
+    return STATUS_VI.get(
+        key,
+        value,
+    )
+
+
+def render_unsupported_result(result):
+    st.markdown(
+        """
+<div class="unsupported">
+  <div class="big">
+    Loại quả chưa được hỗ trợ
+  </div>
+  <div class="muted">
+    Hệ thống hiện hỗ trợ: Táo, Chuối, Cam và Cà chua.
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.caption(
+        "Nếu đây thực sự là một trong 4 loại trên, "
+        "hãy thử chụp lại một quả chính, rõ nét và đủ sáng."
+    )
+
+    render_latency(
+        result
+    )
+
+
+def render_quality_rejection(result):
+    st.warning(
+        "Ảnh chưa đạt chất lượng"
+    )
+
+    st.markdown(
+        "Vui lòng chụp lại:\n"
+        + "\n".join(
+            f"- {item}"
+            for item in QUALITY_GUIDANCE
+        )
+    )
+
+    render_latency(
+        result
+    )
+
+
+def render_success_result(result):
+    fruit = display_fruit(
+        result["fruit"]
+    )
+
+    status = display_condition(
+        result["condition"]
+    )
+
+    st.markdown(
+        f"""
+<div class="good">
+  <div class="big">{fruit}</div>
+  <div>
+    Tình trạng: <b>{status}</b>
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    c1, c2 = st.columns(
+        2
+    )
+
+    c1.metric(
+        "Tin cậy loại quả",
+        f"{result['fruit_score']:.1%}",
+    )
+
+    c2.metric(
+        "Tin cậy tình trạng",
+        (
+            f"{result['condition_score_given_fruit']:.1%}"
+        ),
+    )
+
+    render_latency(
+        result
+    )
 
 
 st.set_page_config(
@@ -209,6 +372,14 @@ source = st.radio(
     horizontal=True,
 )
 
+st.info(
+    "Để kết quả chính xác hơn:\n"
+    + "\n".join(
+        f"- {item}"
+        for item in QUALITY_GUIDANCE
+    )
+)
+
 
 if source == "Tải ảnh":
     item = st.file_uploader(
@@ -264,11 +435,30 @@ with right:
             with st.spinner(
                 "Đang phân tích..."
             ):
+                start_time = time.perf_counter()
                 analyzed = analyze_bytes(
                     model,
                     image_bytes,
                     device,
                     gate,
+                )
+                measured_latency_ms = (
+                    time.perf_counter()
+                    - start_time
+                ) * 1000
+
+                analyzed = dict(
+                    analyzed
+                )
+
+                tv3_latency = analyzed.get(
+                    "latency_ms"
+                )
+
+                analyzed["latency_ms"] = (
+                    tv3_latency
+                    if tv3_latency is not None
+                    else measured_latency_ms
                 )
 
             store_result(
@@ -296,85 +486,51 @@ with right:
     )
 
     if result:
-        if not result[
-            "supported"
-        ]:
-            st.markdown(
-                """
-<div class="unsupported">
-  <div class="big">
-    Loại quả này hiện chưa được FreshLens hỗ trợ
-  </div>
-  <div class="muted">
-    Hệ thống hiện hỗ trợ: Táo, Chuối, Cam và Cà chua.
-  </div>
-</div>
-""",
-                unsafe_allow_html=True,
+        status = result_status(
+            result
+        )
+
+        if status == "quality_rejected":
+            render_quality_rejection(
+                result
             )
 
-            st.caption(
-                "Nếu đây thực sự là một trong 4 loại trên, "
-                "hãy thử chụp lại một quả chính, rõ nét và đủ sáng."
+        elif status == "unsupported":
+            render_unsupported_result(
+                result
             )
 
         else:
-            fruit = FRUIT_VI[
-                result["fruit"]
-            ]
-
-            status = STATUS_VI[
-                result["condition"]
-            ]
-
-            st.markdown(
-                f"""
-<div class="good">
-  <div class="big">{fruit}</div>
-  <div>
-    Tình trạng: <b>{status}</b>
-  </div>
-</div>
-""",
-                unsafe_allow_html=True,
+            render_success_result(
+                result
             )
 
-            c1, c2 = st.columns(
-                2
-            )
+        if {
+            "support_probability",
+            "support_threshold",
+            "fruit_scores",
+            "gate_detail",
+        }.issubset(result):
+            with st.expander(
+                "Chi tiết kỹ thuật"
+            ):
+                st.write(
+                    "Supported score: "
+                    f"{result['support_probability']:.3f} "
+                    "/ threshold "
+                    f"{result['support_threshold']:.3f}"
+                )
 
-            c1.metric(
-                "Tin cậy loại quả",
-                f"{result['fruit_score']:.1%}",
-            )
-
-            c2.metric(
-                "Tin cậy tình trạng",
-                (
-                    f"{result['condition_score_given_fruit']:.1%}"
-                ),
-            )
-
-        with st.expander(
-            "Chi tiết kỹ thuật"
-        ):
-            st.write(
-                "Supported score: "
-                f"{result['support_probability']:.3f} "
-                "/ threshold "
-                f"{result['support_threshold']:.3f}"
-            )
-
-            st.json(
-                {
-                    "fruit_scores": result[
-                        "fruit_scores"
-                    ],
-                    "gate": result[
-                        "gate_detail"
-                    ],
-                }
-            )
+                st.json(
+                    {
+                        "fruit_scores": result[
+                            "fruit_scores"
+                        ],
+                        "gate": result[
+                            "gate_detail"
+                        ],
+                    }
+                )
 
 
 st.divider()
