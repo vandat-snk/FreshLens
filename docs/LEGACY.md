@@ -19,19 +19,19 @@ APP_CNN_V2.py
 
 | Path | Role now |
 | --- | --- |
-| `src/` | Older SVM / handcrafted-feature baseline. Not production CNN V2. |
-| `FreshLens_Buoc1_DuLieu/` | Historical data-preparation / database integration stage. |
-| `FreshLens_Buoc2_ChiaTap/` | Historical split-preparation stage. |
-| `FreshLens_Buoc2B_GomNhom/` | Historical grouping / near-duplicate handling stage. |
-| `FreshLens_Buoc3_CNN/` | Pre-refactor CNN implementation used as an equivalence reference. |
-| `FreshLens_Buoc4_ExternalTest/` | External-test tooling/history. |
-| `FreshLens_Buoc4B_MoRongExternalTest/` | External V2 tooling/history. |
-| `FreshLens_Buoc5_AppThucTe/` | Former Streamlit/open-set application implementation. |
-| `FreshLens_Buoc5_FIX/` | Corrected pre-refactor production open-set implementation used as a behavior reference. |
+| `legacy/svm/` | Older SVM / handcrafted-feature baseline. Not production CNN V2. |
+| `legacy/development/step1_data/` | Historical data-preparation / database integration stage. |
+| `legacy/development/step2_split/` | Historical split-preparation stage. |
+| `legacy/development/step2b_grouping/` | Historical grouping / near-duplicate handling stage. |
+| `legacy/development/step3_cnn/` | Pre-refactor CNN implementation used as an equivalence reference. |
+| `legacy/development/step4_external_test/` | External-test tooling/history. |
+| `legacy/development/step4b_external_v2/` | External V2 tooling/history. |
+| `legacy/development/step5_app/` | Former Streamlit/open-set application implementation. |
+| `legacy/development/step5_fix/` | Corrected pre-refactor production open-set implementation used as a behavior reference. |
 
 ## Why these folders are still present
 
-Several `TEST_*_REFACTOR.py` checks intentionally compare the modular V2 implementation with legacy behavior. Deleting the old files immediately would remove those reference implementations and weaken the refactor audit trail.
+Several `tests/refactor/TEST_*_REFACTOR.py` checks intentionally compare the modular V2 implementation with legacy behavior. Deleting the old files immediately would remove those reference implementations and weaken the refactor audit trail.
 
 Therefore:
 
@@ -40,6 +40,9 @@ Therefore:
 - keep them read-only except when repairing an equivalence test;
 - do not delete them until the team explicitly decides that equivalence tests no longer need them.
 
-## Cleanup rule
+## Archive status
 
-A later archival step may move historical code under a dedicated archive layout, but that should be a separate commit after all path-sensitive tests have been updated and rerun.
+Historical implementations have been moved under `legacy/`. The active
+production runtime lives in `freshlens_ai/` and the root V2 entry points.
+The archive is retained only for reproducibility, regression checks, and
+refactor-equivalence tests.
