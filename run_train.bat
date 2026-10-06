@@ -1,14 +1,20 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-set "FRESHLENS_PYTHON=%~dp0.venv\Scripts\python.exe"
+
 set "PYTHONUTF8=1"
+set "FRESHLENS_PYTHON=%~dp0.venv\Scripts\python.exe"
+
 if not exist "%FRESHLENS_PYTHON%" (
-    echo [LOI] Chua co .venv\Scripts\python.exe. Hay tao virtualenv cua du an.
+    echo [ERROR] Missing .venv\Scripts\python.exe
+    echo Create the project virtual environment first.
     exit /b 1
 )
-if not "%~1"=="" set "FRESHLENS_DATASET_ROOT=%~1"
-rem src.train validates the existing manifest and stops on errors.
-rem Never regenerate a MongoDB-exported manifest here.
-"%FRESHLENS_PYTHON%" -m src.train --ablation
+
+rem Forward every command-line argument to the modular CNN V2 trainer.
+rem Examples:
+rem   run_train.bat --help
+rem   run_train.bat --root "E:\path\to\original_dataset"
+rem   run_train.bat --root "E:\path\to\original_dataset" --resume --device cuda
+"%FRESHLENS_PYTHON%" TRAIN_CNN_V2.py %*
 exit /b %errorlevel%

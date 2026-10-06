@@ -1,0 +1,13 @@
+# FreshLens tested GPU stack
+# NVIDIA / CUDA 12.8 build used by the validated project environment.
+#
+# Install the shared dependencies first:
+#   python -m pip install -r requirements.txt
+# Then install this file:
+#   python -m pip install -r requirements-torch-cu128.txt
+
+--index-url https://download.pytorch.org/whl/cu128
+--extra-index-url https://pypi.org/simple
+
+torch==2.10.0+cu128
+torchvision==0.25.0+cu128
