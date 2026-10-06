@@ -27,6 +27,36 @@ device camera.
 The open-set gate can reject images that are insufficiently similar
 to the supported fruit classes.
 
+## Results
+
+The current production checkpoint was evaluated on the locked internal
+dataset and on a separate real-world external image set.
+
+| Evaluation set | Fruit Accuracy | Condition Accuracy | Joint Accuracy | Joint Macro-F1 |
+|---|---:|---:|---:|---:|
+| Validation | — | — | **99.16%** | **99.13%** |
+| Internal test | — | — | **98.37%** | — |
+| External V2 | **97.53%** | **93.83%** | **92.59%** | **92.45%** |
+
+`Joint Accuracy` requires both the predicted fruit type and freshness
+condition to be correct.
+
+### Generalization note
+
+The decrease from internal performance to External V2 indicates
+real-world domain shift. This is an important limitation of the current
+model and motivates further work on dataset diversity and robust
+generalization.
+
+### Open-set calibration note
+
+External V2 was evaluated before being used to calibrate the production
+open-set gate. From that point onward, External V2 is calibration data
+and must **not** be presented as a future untouched test set.
+
+The open-set gate does not modify the CNN weights. It operates on model
+confidence and embedding-derived features to determine whether an input
+is sufficiently similar to the supported fruit classes.
 
 ## 1. Supported scope
 
