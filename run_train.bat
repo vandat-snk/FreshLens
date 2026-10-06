@@ -14,7 +14,7 @@ if not exist "%FRESHLENS_PYTHON%" (
 rem Forward every command-line argument to the modular CNN V2 trainer.
 rem Examples:
 rem   run_train.bat --help
-rem   run_train.bat --resume
-rem   run_train.bat --device cuda
+rem   run_train.bat --root "E:\path\to\original_dataset"
+rem   run_train.bat --root "E:\path\to\original_dataset" --resume --device cuda
 "%FRESHLENS_PYTHON%" TRAIN_CNN_V2.py %*
 exit /b %errorlevel%
