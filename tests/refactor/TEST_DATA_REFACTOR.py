@@ -8,7 +8,7 @@ from pathlib import Path
 
 import torch
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 
 if str(LEGACY_DIR) not in sys.path:

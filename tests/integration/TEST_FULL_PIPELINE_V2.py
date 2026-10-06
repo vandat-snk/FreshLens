@@ -22,7 +22,7 @@ from freshlens_ai.inference import analyze_bytes, load_gate, predict_image
 from freshlens_ai.models import load_model
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 
 CHECKPOINT = (
     PROJECT_DIR
@@ -412,7 +412,8 @@ def main():
             "Stage B - data",
             [
                 python,
-                "TEST_DATA_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_DATA_REFACTOR",
                 "--root",
                 str(args.root),
                 "--data",
@@ -423,56 +424,64 @@ def main():
             "Stage C - model",
             [
                 python,
-                "TEST_MODEL_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_MODEL_REFACTOR",
             ],
         ),
         (
             "Stage D - training",
             [
                 python,
-                "TEST_TRAINING_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_TRAINING_REFACTOR",
             ],
         ),
         (
             "Stage E - evaluation",
             [
                 python,
-                "TEST_EVALUATION_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_EVALUATION_REFACTOR",
             ],
         ),
         (
             "Stage F - orchestration",
             [
                 python,
-                "TEST_ORCHESTRATION_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_ORCHESTRATION_REFACTOR",
             ],
         ),
         (
             "Stage G1 - inference runtime",
             [
                 python,
-                "TEST_INFERENCE_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_INFERENCE_REFACTOR",
             ],
         ),
         (
             "Stage G2 - gate builder",
             [
                 python,
-                "TEST_GATE_BUILDER_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_GATE_BUILDER_REFACTOR",
             ],
         ),
         (
             "Stage G3 - predictor CLI",
             [
                 python,
-                "TEST_PREDICT_ENTRYPOINT_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_PREDICT_ENTRYPOINT_REFACTOR",
             ],
         ),
         (
             "Stage G4 - Streamlit app",
             [
                 python,
-                "TEST_APP_REFACTOR.py",
+                "-m",
+                "tests.refactor.TEST_APP_REFACTOR",
             ],
         ),
     ]
@@ -534,8 +543,7 @@ def main():
         )
 
         print(
-            "[NEXT] Manually verify APP_CNN_V2.py "
-            "with upload + camera before merging Dat into main."
+            "[OK] Repository-level V2 integration verification complete."
         )
 
         return 0

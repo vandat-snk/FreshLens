@@ -10,7 +10,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 
 if str(LEGACY_DIR) not in sys.path:

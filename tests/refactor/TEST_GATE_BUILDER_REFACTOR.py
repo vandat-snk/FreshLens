@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step5_fix"
 LEGACY_PATH = LEGACY_DIR / "BUILD_OPENSET_GATE.py"
 

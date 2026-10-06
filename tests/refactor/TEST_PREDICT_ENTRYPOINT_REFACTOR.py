@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 LEGACY_PATH = LEGACY_DIR / "PREDICT_CNN.py"
 
