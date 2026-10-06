@@ -58,6 +58,44 @@ The open-set gate does not modify the CNN weights. It operates on model
 confidence and embedding-derived features to determine whether an input
 is sufficiently similar to the supported fruit classes.
 
+## Architecture
+
+FreshLens uses a modular CNN pipeline based on EfficientNet-B0. The model
+first predicts the fruit type, then determines the freshness condition
+within the selected fruit. An additional open-set gate decides whether
+the input is sufficiently similar to the supported fruit classes.
+
+```mermaid
+flowchart LR
+    A[Input Image] --> B[Image Preprocessing]
+    B --> C[EfficientNet-B0]
+
+    C --> D[8-Class CNN Output]
+    D --> E[Fruit-first Decision]
+
+    E --> F[Fruit Type]
+    E --> G[Fresh / Rotten]
+
+    C --> H[Confidence + Embedding Features]
+    H --> I[Open-set Gate]
+
+    I --> J{Supported Input?}
+    J -->|Yes| K[Return Fruit + Condition]
+    J -->|No| L[Reject Unsupported Input]
+```
+
+### Prediction flow
+
+1. The input image is decoded and normalized using the same preprocessing
+   pipeline used during evaluation.
+2. EfficientNet-B0 produces logits for the 8 joint fruit-condition classes.
+3. FreshLens applies a fruit-first decision rule rather than directly using
+   the raw 8-class argmax.
+4. The selected fruit is classified as either `fresh` or `rotten`.
+5. Confidence and embedding-derived features are passed to the open-set gate.
+6. Unsupported inputs can be rejected instead of forcing them into one of
+   the four supported fruit categories.
+
 ## 1. Supported scope
 
 Production V2 supports 4 fruit types and 2 visible conditions:
