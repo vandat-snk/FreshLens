@@ -1,6 +1,6 @@
 """Build the FreshLens 1.1 external-calibration open-set gate.
 
-This module preserves the behavior of FreshLens_Buoc5_FIX/BUILD_OPENSET_GATE.py
+This module preserves the behavior of legacy/development/step5_fix/BUILD_OPENSET_GATE.py
 while depending only on the modular freshlens_ai package.
 """
 

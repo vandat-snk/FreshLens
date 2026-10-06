@@ -15,7 +15,7 @@ from freshlens_ai.inference import (
 )
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 APP = PROJECT_DIR / "APP_CNN_V2.py"
 RUNNER = PROJECT_DIR / "RUN_APP_V2.cmd"
 

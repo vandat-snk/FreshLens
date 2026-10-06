@@ -10,8 +10,8 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-PROJECT_DIR = Path(__file__).resolve().parent
-LEGACY_DIR = PROJECT_DIR / "FreshLens_Buoc3_CNN"
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 
 if str(LEGACY_DIR) not in sys.path:
     sys.path.insert(0, str(LEGACY_DIR))

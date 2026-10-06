@@ -1,9 +1,9 @@
-# FreshLens Stage G5 - Final integration check
+# FreshLens Stage integration suite - Final integration check
 
 Run from the project root:
 
 ```cmd
-.\.venv\Scripts\python.exe TEST_FULL_PIPELINE_V2.py ^
+.\.venv\Scripts\python.exe -m tests.integration.TEST_FULL_PIPELINE_V2 ^
   --root "E:\VanDat_\XuLyAnh\FreshLens_Pro\FreshLens\dataset" ^
   --data "data\cnn_dataset_v3"
 ```

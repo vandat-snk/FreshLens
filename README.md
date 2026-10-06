@@ -111,8 +111,11 @@ FreshLens/
 |-- docs/
 |-- scripts/
 |
-|-- TEST_FULL_PIPELINE_V2.py
-|-- TEST_*_REFACTOR.py
+|-- tests/
+|   |-- integration/
+|   |   `-- TEST_FULL_PIPELINE_V2.py
+|   `-- refactor/
+|       `-- TEST_*_REFACTOR.py
 |
 |-- requirements.txt
 |-- requirements-torch-cu128.txt
@@ -121,7 +124,7 @@ FreshLens/
 `-- pyproject.toml
 ```
 
-See [`docs/LEGACY.md`](docs/LEGACY.md) before using folders named `FreshLens_Buoc*` or `src/`.
+Historical implementations are archived under `legacy/`. See [`docs/LEGACY.md`](docs/LEGACY.md) before using them.
 
 ## 4. Environment
 
@@ -322,14 +325,14 @@ The modular refactor has dedicated equivalence tests for data, model constructio
 Run individual tests, for example:
 
 ```cmd
-.\.venv\Scripts\python.exe TEST_INFERENCE_REFACTOR.py
-.\.venv\Scripts\python.exe TEST_APP_REFACTOR.py
+.\.venv\Scripts\python.exe -m tests.refactor.TEST_INFERENCE_REFACTOR
+.\.venv\Scripts\python.exe -m tests.refactor.TEST_APP_REFACTOR
 ```
 
 Run the complete integration suite:
 
 ```cmd
-.\.venv\Scripts\python.exe TEST_FULL_PIPELINE_V2.py ^
+.\.venv\Scripts\python.exe -m tests.integration.TEST_FULL_PIPELINE_V2 ^
   --root "E:\path\to\original_dataset" ^
   --data "data\cnn_dataset_v3"
 ```
@@ -367,9 +370,9 @@ run_app.bat
 run_train.bat
 ```
 
-Do **not** use `src/` as the production CNN implementation. It is the older SVM / handcrafted-feature baseline.
+Do **not** use `legacy/svm/` as the production CNN implementation. It contains the archived SVM / handcrafted-feature baseline.
 
-The `FreshLens_Buoc*` folders preserve development history, data-preparation stages, external-test scripts, and the former pre-refactor CNN/open-set implementation. Some equivalence tests intentionally compare V2 behavior against those files, so they should not be deleted during cleanup without first redesigning the tests.
+The `legacy/development/` tree preserves historical data-preparation stages, external-test tooling, and the pre-refactor CNN/open-set implementations. Refactor-equivalence tests intentionally compare V2 behavior against selected archived files, so the archive should remain read-only unless those tests are intentionally redesigned.
 
 ## 13. Security and repository hygiene
 

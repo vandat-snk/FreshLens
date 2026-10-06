@@ -13,8 +13,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-PROJECT_DIR = Path(__file__).resolve().parent
-LEGACY_DIR = PROJECT_DIR / "FreshLens_Buoc3_CNN"
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+LEGACY_DIR = PROJECT_DIR / "legacy" / "development" / "step3_cnn"
 LEGACY_PATH = LEGACY_DIR / "PREDICT_CNN.py"
 
 CHECKPOINT = (
@@ -353,7 +353,7 @@ def main():
 
     print(
         "[PASS] Stage G3 predictor entry point is behavior-equivalent "
-        "to FreshLens_Buoc3_CNN/PREDICT_CNN.py"
+        "to legacy/development/step3_cnn/PREDICT_CNN.py"
     )
 
     return 0
