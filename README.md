@@ -11,6 +11,70 @@ FreshLens is an image-classification project for recognizing the **fruit type** 
 
 The current production pipeline is the modular **CNN V2** implementation based on **EfficientNet-B0 + PyTorch**. The older SVM and step-by-step development folders are retained only for reference, audit, and behavior-equivalence testing.
 
+## Key Features
+
+- **Fruit recognition** for Apple, Banana, Orange, and Tomato.
+- **Freshness classification** into Fresh and Rotten conditions.
+- **EfficientNet-B0** with ImageNet pretrained weights.
+- **Fruit-first inference** instead of direct raw 8-class argmax.
+- **Open-set rejection** for unsupported inputs.
+- **Image upload and camera capture** through Streamlit.
+- **Reproducible training and evaluation** using a locked dataset manifest.
+- **Behavior-equivalence and integration tests** for the modular CNN V2 pipeline.
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/vandat-snk/FreshLens.git
+cd FreshLens
+```
+
+### 2. Create a virtual environment
+
+```cmd
+py -m venv .venv
+```
+
+Activate it on Windows:
+
+```cmd
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```cmd
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-torch-cu128.txt
+```
+
+> `requirements-torch-cu128.txt` installs the validated CUDA 12.8
+> PyTorch environment. Use a compatible PyTorch build if your machine
+> uses a different CUDA version or CPU-only inference.
+
+### 4. Run FreshLens
+
+```cmd
+run_app.bat
+```
+
+Or run Streamlit directly:
+
+```cmd
+python -m streamlit run APP_CNN_V2.py
+```
+
+The application supports:
+
+- image upload;
+- camera capture;
+- fruit recognition;
+- Fresh / Rotten classification;
+- unsupported-input rejection using the open-set gate.
+
 ## Demo
 
 ### Fruit and freshness prediction
