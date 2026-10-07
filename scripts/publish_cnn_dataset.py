@@ -1,4 +1,4 @@
-"""Publish the locked FreshLens CNN dataset to Cloudinary + MongoDB Atlas.
+r"""Publish the locked FreshLens CNN dataset to Cloudinary + MongoDB Atlas.
 
 Important:
 - Reads the existing locked manifest (cnn_dataset_v3).
@@ -32,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from dotenv import load_dotenv
 from pymongo import ASCENDING
 
-from scripts.db_manager import get_db, test_connection
+from freshlens_ai.storage import get_db, test_connection
 
 try:
     import cloudinary

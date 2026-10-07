@@ -1,4 +1,4 @@
-"""Download one locked FreshLens CNN dataset version from Cloudinary.
+r"""Download one locked FreshLens CNN dataset version from Cloudinary.
 
 The manifest stays authoritative. The script:
 1) reads the exact committed manifest,
@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dotenv import load_dotenv
 
-from scripts.db_manager import get_db, test_connection
+from freshlens_ai.storage import get_db, test_connection
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
