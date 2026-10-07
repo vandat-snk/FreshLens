@@ -206,7 +206,7 @@ def inspect_image(root, row, thresholds=None, strip_prefix="", fingerprints=Fals
     return result
 
 
-def audit_dataset(supported, other=(), root=None, thresholds=None, strip_prefix="", fingerprints=False, progress=False, path_overrides=None):
+def audit_dataset(supported, other=(), root=None, thresholds=None, strip_prefix="", fingerprints=False, progress=False, path_overrides=None, quality_records=None):
     thresholds = dict(DEFAULT_THRESHOLDS if thresholds is None else thresholds)
     if any(not np.isfinite(float(v)) or float(v) < 0 for v in thresholds.values()):
         raise ValueError("Quality thresholds must be finite and nonnegative")
@@ -217,14 +217,19 @@ def audit_dataset(supported, other=(), root=None, thresholds=None, strip_prefix=
     # Validate the mapping before any expensive reads or output creation.
     for row in rows:
         mapped_image_path(row["path"], strip_prefix)
-    quality = []
-    def inspect_row(row):
-        return inspect_image(root, row, thresholds, strip_prefix, fingerprints, path_overrides)
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        for index, result in enumerate(executor.map(inspect_row, rows), 1):
-            quality.append(result)
-            if progress and (index % 250 == 0 or index == len(rows)):
-                print(f"[AUDIT] {index}/{len(rows)} images", flush=True)
+    if quality_records is not None:
+        quality = [dict(q) for q in quality_records]
+        if len(quality) != len(rows) or any(q["path"] != r["path"] or q["sha256"] != r["sha256"] for q,r in zip(quality,rows)):
+            raise ValueError("Precomputed quality coverage or identity mismatch")
+    else:
+        quality = []
+        def inspect_row(row):
+            return inspect_image(root, row, thresholds, strip_prefix, fingerprints, path_overrides)
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            for index, result in enumerate(executor.map(inspect_row, rows), 1):
+                quality.append(result)
+                if progress and (index % 250 == 0 or index == len(rows)):
+                    print(f"[AUDIT] {index}/{len(rows)} images", flush=True)
     decoded = [q for q in quality if q["decode_status"] == "OK"]
     actual_rows = [dict(row, sha256=q["actual_sha256"]) for row, q in zip(rows, quality)
                    if q["actual_sha256"]]
@@ -237,7 +242,7 @@ def audit_dataset(supported, other=(), root=None, thresholds=None, strip_prefix=
     camera = [r for r in rows if r.get("capture_device") in ("phone", "laptop_camera", "other_camera")]
     specimen_groups, specimen_splits, group_specimens = defaultdict(set), defaultdict(set), defaultdict(set)
     for row in rows:
-        if row.get("specimen_id"):
+        if row.get("specimen_id") not in (None, "", "UNKNOWN", "NOT_AVAILABLE"):
             specimen_groups[row["specimen_id"]].add(row.get("group_id", ""))
             specimen_splits[row["specimen_id"]].add(row.get("split", ""))
             group_specimens[row.get("group_id", "")].add(row["specimen_id"])

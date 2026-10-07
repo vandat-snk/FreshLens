@@ -153,6 +153,8 @@ def build_dataset(baseline_dir, output_dir, root=None, inventory=None, seed=42, 
     overrides = load_path_mapping(path_map_csv, baseline, strip_prefix)
     inventory_hash = file_sha256(inventory) if inventory is not None else None
     added_supported, added_other = load_inventory(inventory, root, strip_prefix)
+    if added_supported or added_other:
+        raise ValueError("New records require the reviewed V5 sources builder; legacy V3 build is baseline-only")
     supported, other = assign_new_splits(baseline, added_supported, added_other, seed)
     report, quality = audit_dataset(supported, other, root, thresholds, strip_prefix, fingerprints=require_images, progress=root is not None, path_overrides=overrides)
     if require_images and not report["all_image_files_verified"]:
