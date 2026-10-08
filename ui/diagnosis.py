@@ -1,4 +1,4 @@
-﻿"""Diagnosis page renderer for FreshLens Streamlit UI."""
+"""Diagnosis page renderer for FreshLens Streamlit UI."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from typing import Any
 import streamlit as st
 
 from freshlens_ai.inference import clear_result, result_for_image, store_result
+from freshlens_ai.data import rgb_from_bytes
 from freshlens_ai.utils.file_io import sha256_bytes
 
 
@@ -100,12 +101,20 @@ button[kind="secondary"] { border-radius: 8px; }
 """
 
 
-def render_diagnosis_page(predictor, show_sidebar: bool = True) -> None:
+def render_diagnosis_page(
+    predictor,
+    show_sidebar: bool = True,
+    check_quality: bool = False,
+) -> None:
     """Render the Diagnosis page while preserving the existing inference flow."""
     _init_ui_state()
     _render_styles()
     if show_sidebar:
-        _render_sidebar(metadata, gate, device)
+        _render_sidebar(
+            predictor.metadata,
+            predictor.openset_gate,
+            predictor.device,
+        )
     _render_header()
 
     left, right = st.columns([0.45, 0.55], gap="large")
@@ -117,7 +126,12 @@ def render_diagnosis_page(predictor, show_sidebar: bool = True) -> None:
     image_meta = st.session_state.get("current_image_meta")
 
     with right:
-        _render_result_panel(image_bytes, image_meta, predictor)
+        _render_result_panel(
+            image_bytes,
+            image_meta,
+            predictor,
+            check_quality,
+        )
 
     _render_guidance()
     _render_footer()
@@ -199,17 +213,43 @@ def _render_upload_control() -> None:
 
     if uploaded is None:
         current_meta = st.session_state.get("current_image_meta") or {}
-        if current_meta.get("source") == "upload" and st.session_state.current_image_bytes is not None:
+
+        if (
+            current_meta.get("source") == "upload"
+            and st.session_state.current_image_bytes is not None
+        ):
             _remove_current_image(keep_source=True)
+
         return
 
-    uploaded_bytes = uploaded.getvalue()
+    try:
+        uploaded_bytes = uploaded.getvalue()
+
+        # Validate actual image bytes before storing them.
+        rgb_from_bytes(uploaded_bytes)
+
+    except Exception as exc:
+        _remove_current_image(keep_source=True)
+        st.error(f"Không đọc được ảnh: {exc}")
+        return
+
     _set_current_image(
         uploaded_bytes,
         {
-            "name": uploaded.name,
-            "size": int(getattr(uploaded, "size", 0) or len(uploaded_bytes)),
-            "type": getattr(uploaded, "type", None),
+            "name": getattr(
+                uploaded,
+                "name",
+                "uploaded-image.png",
+            ),
+            "size": int(
+                getattr(uploaded, "size", 0)
+                or len(uploaded_bytes)
+            ),
+            "type": getattr(
+                uploaded,
+                "type",
+                "image/png",
+            ),
             "source": "upload",
         },
     )
@@ -282,7 +322,12 @@ def _render_preview() -> None:
         unsafe_allow_html=True,
     )
 
-def _render_result_panel(image_bytes, image_meta, predictor) -> None:
+def _render_result_panel(
+    image_bytes,
+    image_meta,
+    predictor,
+    check_quality: bool = False,
+) -> None:
     st.markdown('<div class="fl-card-title">Kết quả</div>', unsafe_allow_html=True)
     if image_bytes is None:
         st.markdown(
@@ -292,7 +337,11 @@ def _render_result_panel(image_bytes, image_meta, predictor) -> None:
         return
 
     if st.button("Phân tích ảnh", type="primary", width="stretch"):
-        _analyze_current_image(image_bytes, predictor)
+        _analyze_current_image(
+            image_bytes,
+            predictor,
+            check_quality,
+        )
 
     result = result_for_image(st.session_state, image_bytes)
     if not result:
@@ -310,7 +359,11 @@ def _render_result_panel(image_bytes, image_meta, predictor) -> None:
     _render_technical_details(result)
 
 
-def _analyze_current_image(image_bytes, predictor) -> None:
+def _analyze_current_image(
+    image_bytes,
+    predictor,
+    check_quality: bool = False,
+) -> None:
     try:
         with st.spinner("Đang phân tích..."):
             start_time = time.perf_counter()
@@ -319,7 +372,7 @@ def _analyze_current_image(image_bytes, predictor) -> None:
                 predictor.predict(
                     image_bytes,
                     use_tta=False,
-                    check_quality=True,
+                    check_quality=check_quality,
                 )
             )
 
