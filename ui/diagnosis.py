@@ -207,7 +207,7 @@ def _render_upload_control() -> None:
     _set_current_image(
         uploaded_bytes,
         {
-            "name": uploaded.name,
+            "name": getattr(uploaded, "name", "uploaded-image.png"),
             "size": int(getattr(uploaded, "size", 0) or len(uploaded_bytes)),
             "type": getattr(uploaded, "type", None),
             "source": "upload",
