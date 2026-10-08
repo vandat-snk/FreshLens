@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import os
+
 import torch
 import streamlit as st
 
 from freshlens_ai.constants import PROJECT_DIR
+from freshlens_ai.inference import clear_result
+from freshlens_ai.inference.quality import DEFAULT_QUALITY_CONFIG, load_quality_config, quality_config_hash
 from freshlens_ai.inference.cnn_predict import FreshLensPredictor
 from ui.about import render_about_page
 from ui.diagnosis import render_diagnosis_page
@@ -25,15 +29,9 @@ st.set_page_config(
 )
 
 
-@st.cache_resource
-def load_runtime():
+@st.cache_resource(max_entries=1)
+def load_runtime(quality_config):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    quality_config_path = PROJECT_DIR / "config" / "quality.json"
-
-    from freshlens_ai.inference.quality import load_quality_config
-
-    quality_config = load_quality_config(quality_config_path)
 
     return FreshLensPredictor(
         CHECKPOINT,
@@ -108,13 +106,27 @@ selected_page = render_sidebar_navigation()
 
 
 if selected_page == "Chẩn đoán":
+    quality_path = os.environ.get("FRESHLENS_QUALITY_CONFIG") or DEFAULT_QUALITY_CONFIG
     try:
-        predictor = load_runtime()
+        quality_config = load_quality_config(quality_path)
+    except (OSError, ValueError) as exc:
+        clear_result(st.session_state)
+        st.error(f"Không thể đọc cấu hình kiểm tra chất lượng: {exc}")
+        st.caption(f"Kiểm tra file {quality_path}: file phải tồn tại, đúng định dạng JSON và có các ngưỡng hợp lệ.")
+        st.stop()
+
+    try:
+        # Nhi UI always enables quality; changed thresholds invalidate old results.
+        policy_identity = (True, quality_config_hash(quality_config))
+        if st.session_state.get("quality_policy_key") != policy_identity:
+            clear_result(st.session_state)
+            st.session_state["quality_policy_key"] = policy_identity
+        predictor = load_runtime(quality_config)
     except Exception as exc:
         st.error(f"Chưa thể khởi động mô hình: {exc}")
-        st.code(
-            r".\.venv\Scripts\python.exe BUILD_OPENSET_GATE_V2.py --device cuda",
-            language="text",
+        st.caption(
+            "Kiểm tra checkpoint, bộ gate đi kèm và thiết bị chạy theo lỗi ở trên. "
+            "Chỉ dựng lại gate khi đã xác định cần hiệu chỉnh lại và có dữ liệu phù hợp."
         )
         st.stop()
 

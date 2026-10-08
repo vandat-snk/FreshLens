@@ -105,7 +105,7 @@ def render_diagnosis_page(predictor, show_sidebar: bool = True) -> None:
     _init_ui_state()
     _render_styles()
     if show_sidebar:
-        _render_sidebar(metadata, gate, device)
+        _render_sidebar()
     _render_header()
 
     left, right = st.columns([0.45, 0.55], gap="large")
@@ -141,7 +141,7 @@ def _render_styles() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
 
 
-def _render_sidebar(metadata, gate, device) -> None:
+def _render_sidebar() -> None:
     with st.sidebar:
         st.markdown("<h1>FreshLens</h1>", unsafe_allow_html=True)
         for label, active in [

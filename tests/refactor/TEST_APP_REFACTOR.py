@@ -1,10 +1,11 @@
-"""Stage G4 tests for the modular FreshLens Streamlit app."""
+"""G4 regression contract for FreshLens modular Streamlit UI (Nhi + TV3).
 
+This checks structure and session-state logic without starting a browser or loading
+CNN weights. Run TV3 AppTest and an interactive UI smoke test separately.
+"""
 from __future__ import annotations
 
 import ast
-import subprocess
-import sys
 from pathlib import Path
 
 from freshlens_ai.inference import (
@@ -17,166 +18,117 @@ from freshlens_ai.inference import (
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 APP = PROJECT_DIR / "APP_CNN_V2.py"
+DIAGNOSIS = PROJECT_DIR / "ui" / "diagnosis.py"
+OTHER_PAGES = [
+    PROJECT_DIR / "ui" / "evaluation.py",
+    PROJECT_DIR / "ui" / "explanation.py",
+    PROJECT_DIR / "ui" / "about.py",
+]
 RUNNER = PROJECT_DIR / "RUN_APP_V2.cmd"
 
 
-def main():
-    # Session-state correctness: result must be tied to exact input bytes.
+def _parse(path: Path) -> ast.Module:
+    if not path.is_file():
+        raise AssertionError(f"Missing UI module: {path}")
+    source = path.read_text(encoding="utf-8-sig")
+    tree = ast.parse(source, filename=str(path))
+    compile(tree, str(path), "exec")
+    return tree
+
+
+def _calls(tree: ast.AST, dotted: str):
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and ast.unparse(node.func) == dotted:
+            yield node
+
+
+def _require_calls(tree: ast.AST, names: tuple[str, ...], path: Path) -> None:
+    for name in names:
+        if not any(_calls(tree, name)):
+            raise AssertionError(f"{path.name}: missing call {name}(...)")
+
+
+def _require_function(tree: ast.Module, name: str) -> ast.FunctionDef:
+    found = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == name]
+    assert len(found) == 1, f"Function {name} must exist exactly once"
+    return found[0]
+
+
+def _check_no_legacy_imports(path: Path, tree: ast.AST) -> None:
+    forbidden = {"cnn_data", "cnn_model", "cnn_metrics", "open_set"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] not in forbidden, f"Legacy import in {path}"
+        elif isinstance(node, ast.ImportFrom) and node.level == 0:
+            assert (node.module or "").split(".")[0] not in forbidden, f"Legacy import in {path}"
+        elif isinstance(node, ast.Call) and ast.unparse(node.func) == "sys.path.insert":
+            raise AssertionError(f"Legacy sys.path.insert in {path}")
+
+
+def _verify_result_identity() -> None:
     state = {}
+    img_a, img_b = b"image-a", b"image-b"
+    outcome = {"fruit": "apple", "condition": "fresh"}
+    assert image_identity(img_a) != image_identity(img_b)
+    assert result_for_image(state, img_a) is None
+    store_result(state, img_a, outcome)
+    assert result_for_image(state, img_a) == outcome
+    assert result_for_image(state, img_b) is None
+    clear_result(state)
+    assert result_for_image(state, img_a) is None
+    print("[OK] Session state binds prediction to exact input bytes")
 
-    image_a = b"image-a"
-    image_b = b"image-b"
 
-    result_a = {
-        "fruit": "apple",
-        "condition": "fresh",
-    }
+def _verify_app(tree: ast.Module) -> None:
+    _require_calls(tree, ("st.set_page_config", "render_diagnosis_page",
+                          "render_evaluation_page", "render_explanation_page",
+                          "render_about_page", "FreshLensPredictor",
+                          "load_quality_config", "quality_config_hash",
+                          "clear_result"), APP)
+    entry = next(_calls(tree, "render_diagnosis_page"))
+    kwargs = {k.arg: k.value for k in entry.keywords}
+    assert isinstance(kwargs.get("predictor"), ast.Name), "Pass runtime predictor to diagnosis"
+    assert not list(_calls(tree, "st.sidebar.checkbox")), "Nhi UI must keep quality always enabled"
+    assert any(isinstance(x, ast.Constant) and x.value == "FRESHLENS_QUALITY_CONFIG" for x in ast.walk(tree)), \
+        "APP must honor custom quality config environment variable"
+    for module in ["ui.about", "ui.diagnosis", "ui.evaluation", "ui.explanation"]:
+        assert any(isinstance(n, ast.ImportFrom) and n.module == module for n in tree.body), \
+            f"Missing modular UI import: {module}"
+    print("[OK] APP uses four modular pages and TV3 quality policy")
 
-    assert (
-        image_identity(image_a)
-        != image_identity(image_b)
-    )
 
-    assert (
-        result_for_image(
-            state,
-            image_a,
-        )
-        is None
-    )
+def _verify_diagnosis(tree: ast.Module) -> None:
+    _require_calls(tree, ("st.file_uploader", "st.camera_input", "result_for_image",
+                          "store_result", "clear_result", "predictor.predict"), DIAGNOSIS)
+    render = _require_function(tree, "render_diagnosis_page")
+    result_panel = _require_function(tree, "_render_result_panel")
+    analyze = _require_function(tree, "_analyze_current_image")
+    predict_calls = list(_calls(analyze, "predictor.predict"))
+    assert len(predict_calls) == 1, "Expect exactly one predictor call in analyze handler"
+    kwargs = {k.arg: k.value for k in predict_calls[0].keywords}
+    assert isinstance(kwargs.get("check_quality"), ast.Constant) and kwargs["check_quality"].value is True, \
+        "Nhi diagnosis must always request quality checking"
+    assert any(_calls(result_panel, "_analyze_current_image")), "Analysis button must use handler"
+    assert any(_calls(render, "_render_result_panel")), "Diagnosis page must show results"
+    print("[OK] Diagnosis connects upload/camera, analysis and quality policy")
 
-    store_result(
-        state,
-        image_a,
-        result_a,
-    )
 
-    assert (
-        result_for_image(
-            state,
-            image_a,
-        )
-        == result_a
-    )
-
-    assert (
-        result_for_image(
-            state,
-            image_b,
-        )
-        is None
-    )
-
-    clear_result(
-        state
-    )
-
-    assert (
-        result_for_image(
-            state,
-            image_a,
-        )
-        is None
-    )
-
-    print(
-        "[OK] Session-state result is bound to the exact current image"
-    )
-
-    source = APP.read_text(
-        encoding="utf-8"
-    )
-
-    # Parse without executing Streamlit/model loading.
-    ast.parse(
-        source,
-        filename=str(APP),
-    )
-
-    print(
-        "[OK] APP_CNN_V2.py syntax parses successfully"
-    )
-
-    forbidden = (
-        "from cnn_data import",
-        "import cnn_data",
-        "from cnn_model import",
-        "import cnn_model",
-        "from open_set import",
-        "import open_set",
-        "sys.path.insert",
-    )
-
-    for marker in forbidden:
-        assert marker not in source, (
-            "APP_CNN_V2.py still depends on legacy runtime: "
-            + marker
-        )
-
-    required = (
-        "from freshlens_ai.inference import",
-        "from freshlens_ai.inference.cnn_predict import FreshLensPredictor",
-        "result_for_image(",
-        "store_result(",
-        "clear_result(",
-        "st.file_uploader(",
-        "st.camera_input(",
-    )
-
-    for marker in required:
-        assert marker in source, (
-            "APP_CNN_V2.py missing expected modular behavior: "
-            + marker
-        )
-
-    print(
-        "[OK] App uses freshlens_ai runtime and has no legacy cnn_* imports"
-    )
-
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "py_compile",
-            str(APP),
-        ],
-        cwd=PROJECT_DIR,
-        capture_output=True,
-        text=True,
-    )
-
-    assert completed.returncode == 0, (
-        completed.stdout
-        + completed.stderr
-    )
-
-    print(
-        "[OK] APP_CNN_V2.py compiles successfully"
-    )
-
-    assert RUNNER.is_file()
-
-    runner_source = RUNNER.read_text(
-        encoding="utf-8"
-    )
-
-    assert (
-        "streamlit run APP_CNN_V2.py"
-        in runner_source
-    )
-
-    print(
-        "[OK] RUN_APP_V2.cmd targets the modular Streamlit app"
-    )
-
-    print(
-        "[PASS] Stage G4 app refactor passed static/runtime-state tests"
-    )
-
+def main() -> int:
+    _verify_result_identity()
+    trees = {path: _parse(path) for path in [APP, DIAGNOSIS, *OTHER_PAGES]}
+    for path, tree in trees.items():
+        _check_no_legacy_imports(path, tree)
+    print("[OK] All five UI modules compile; no legacy imports/path hacks")
+    _verify_app(trees[APP])
+    _verify_diagnosis(trees[DIAGNOSIS])
+    assert RUNNER.is_file(), "Missing RUN_APP_V2.cmd"
+    runner = RUNNER.read_text(encoding="utf-8-sig")
+    assert "streamlit run APP_CNN_V2.py" in runner, "Runner targets wrong UI script"
+    print("[OK] Windows launcher runs the modular app")
+    print("[PASS] Stage G4 modular UI regression contract")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(
-        main()
-    )
+    raise SystemExit(main())

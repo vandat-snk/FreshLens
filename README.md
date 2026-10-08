@@ -416,7 +416,7 @@ Its JSON includes raw fruit/condition scores, gate score and threshold, final ac
 status, quality diagnostics, and latency. Raw predictions remain available for audit
 when rejected; check `supported` before presenting them as accepted results.
 The matching gate is required. Use `--gate-npz` and `--gate-meta` to override its paths.
-Experimental quality rejection is opt-in with `--quality`.
+CLI quality rejection is opt-in with `--quality`; use this flag when comparing against the Nhi UI, which always enables quality checks.
 App, CLI and evaluator share `config/quality.json`. CLI/evaluator accept
 `--quality-config`; the app accepts the `FRESHLENS_QUALITY_CONFIG` environment variable.
 Evaluation exports the effective `quality_config.json` and its hash for reuse.
@@ -518,7 +518,8 @@ To inspect the builder options:
 ```
 
 TV3 uses the saved threshold and fails explicitly if gate loading or inference fails.
-Quality rejection is experimental and off by default in the UI, CLI and evaluator.
+The Nhi UI always enables quality rejection. Its thresholds still need real-image calibration.
+CLI and evaluator keep quality opt-in via `--quality` for CNN baseline experiments.
 TTA is disabled pending a separate benchmark and compatible gate calibration.
 
 Rebuilding the gate changes the calibrated artifact. Do it only as a deliberate experiment with a documented calibration dataset.
