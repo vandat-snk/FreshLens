@@ -34,7 +34,7 @@ App chạy bằng:
 python -m streamlit run APP_CNN_V2.py
 ```
 
-Kiểm tra chất lượng đang tắt mặc định. Có checkbox thử nghiệm trong sidebar; đổi chính sách sẽ xóa kết quả cũ. CLI có `--quality` để bật bộ ngưỡng thử nghiệm. App, CLI và evaluator mặc định cùng đọc `config/quality.json`.
+Theo chính sách UI nhánh Nhi, app luôn gọi predictor với `check_quality=True` và không có checkbox bật/tắt. Các ngưỡng vẫn cần calibration trên ảnh thật; bật mặc định không phải bằng chứng ngưỡng đã tối ưu. CLI/evaluator giữ `--quality` để lựa chọn giữa baseline CNN và đánh giá chính sách app. Khi đối chiếu với app, phải bật `--quality` và dùng cùng cấu hình. App, CLI và evaluator mặc định cùng đọc `config/quality.json`.
 
 ## Cấu hình quality dùng chung
 
@@ -131,13 +131,13 @@ Full suite đã thêm test TV3. Nó vẫn cần ảnh dataset gốc cho bước 
 python -m tests.integration.TEST_FULL_PIPELINE_V2 --root "path/to/original_dataset" --data "data/cnn_dataset_v3"
 ```
 
-Kiểm tra thủ công: upload ảnh thật; đổi ảnh; đổi checkbox chất lượng; ảnh lỗi; ảnh quá mờ/tối; camera; đối chiếu cùng ảnh qua CLI. Test tổng hợp xác nhận tính đúng của code, không đo accuracy trái cây hoặc khả năng tổng quát hóa.
+Kiểm tra thủ công: upload ảnh thật; đổi ảnh; đổi file cấu hình chất lượng rồi rerun; ảnh lỗi; ảnh quá mờ/tối; camera; đối chiếu cùng ảnh qua CLI. Test tổng hợp xác nhận tính đúng của code, không đo accuracy trái cây hoặc khả năng tổng quát hóa.
 
 ## 7. Kết quả kiểm tra bản sửa
 
 Đã chạy trên môi trường local CPU:
 
-- 30 test TV3 (sau lần bổ sung cấu hình chung và validation gate): preprocessing/gate tương đương production; ảnh EXIF/alpha/xám/WEBP; quality rejection vẫn giữ dự đoán thô; lỗi gate không bị nuốt; mẫu số và bốn trường hợp CNN/gate; manifest và tên file Windows; xuất JSON/CSV/CM/gallery; Grad-CAM thật với checkpoint production; trạng thái Streamlit khi đổi ảnh, đổi chính sách và file hỏng.
+- 30 test TV3 (sau lần bổ sung cấu hình chung và validation gate): preprocessing/gate tương đương production; ảnh EXIF/alpha/xám/WEBP; quality rejection vẫn giữ dự đoán thô; lỗi gate không bị nuốt; mẫu số và bốn trường hợp CNN/gate; manifest và tên file Windows; xuất JSON/CSV/CM/gallery; Grad-CAM thật với checkpoint production; trạng thái Streamlit khi đổi ảnh, đổi cấu hình và file hỏng.
 - Các nhóm regression model, training, evaluation, orchestration, inference, gate builder, CLI và app đã pass.
 - Audit import production và smoke test checkpoint + gate đã pass.
 
@@ -153,3 +153,21 @@ Chưa chạy bước data của full suite vì workspace không có ảnh datase
 5. Chạy benchmark CPU, và GPU nếu máy demo có hỗ trợ, vào hai thư mục riêng. TTA vẫn là thí nghiệm chưa thực hiện; nhóm cần làm thí nghiệm hoặc thống nhất hoãn hạng mục này.
 
 Không có báo cáo final thực tế mới trong bản sửa. Chỉ số sidebar đã đổi tên thành `known_calibration_accept_rate`; metadata cũ vẫn giữ trường alias `known_validation_accept_rate` để tương thích lịch sử, nhưng không dùng alias đó làm bằng chứng validation độc lập.
+
+
+## Sửa lỗi 2 và 3 trên nhánh Nhi
+
+- Giữ bố cục UI Nhi và chính sách luôn bật quality cho chẩn đoán. Không khôi phục checkbox của bản Dat.
+- Đọc quality config trước cache; cache theo nội dung cấu hình, xóa kết quả cũ khi hash thay đổi. Hỗ trợ `FRESHLENS_QUALITY_CONFIG` giống CLI/evaluator.
+- Test dùng mock UploadedFile có name/size/type. Chọn nút theo nhãn “Phân tích ảnh”, không dùng vị trí vì nút xóa “×” đứng trước.
+- Test xác nhận không có checkbox; luôn truyền `check_quality=True`; ảnh kém trả quality rejection; ảnh đạt quality đi tiếp đến CNN/gate; đổi ảnh/config xóa kết quả cũ; file lỗi báo rõ sau khi phân tích.
+- Bộ 30 test TV3 và regression UI đã pass trên môi trường local CPU. Đây là kiểm tra tích hợp, không thay thế benchmark ngưỡng quality trên ảnh thực tế.
+
+Predictor vẫn lưu dự đoán CNN thô cho mục đích đánh giá, kể cả khi quyết định cuối là quality rejection. “Luôn kiểm tra chất lượng” ở đây là chính sách quyết định/hiển thị; không phải cam kết bỏ hoàn toàn lượt tính CNN trên ảnh kém.
+
+### Rà soát bổ sung sau tích hợp UI
+
+- Giới hạn cache runtime bằng `max_entries=1`, tránh giữ vô hạn model theo từng cấu hình quality. Cấu hình không đổi vẫn dùng lại runtime; quay lại cấu hình đã bị loại sẽ tải lại. Giới hạn này áp dụng cho cache, không bảo đảm giải phóng ngay bộ nhớ GPU nếu runtime cũ còn được lượt chạy khác sử dụng.
+- Sidebar mặc định không còn truyền các biến chưa được định nghĩa; bỏ ba tham số không dùng của hàm render sidebar.
+- File quality thiếu, sai JSON hoặc ngưỡng không hợp lệ được báo riêng, xóa kết quả cũ và dừng trước khi tải model. Lỗi khởi tạo model/gate không còn gợi ý chạy ngay lệnh dựng gate dành riêng cho Windows/CUDA.
+- Sau bổ sung: 35 test TV3 và regression UI pass trên local CPU, gồm kiểm tra sidebar mặc định, cấu hình lỗi và loại runtime cũ khỏi cache. Chưa đo bộ nhớ trên GPU thực tế.
