@@ -115,7 +115,7 @@ def main():
 
     required = (
         "from freshlens_ai.inference import",
-        "from freshlens_ai.models import load_model",
+        "from freshlens_ai.inference.cnn_predict import FreshLensPredictor",
         "result_for_image(",
         "store_result(",
         "clear_result(",

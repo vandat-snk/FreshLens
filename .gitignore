@@ -34,3 +34,6 @@ __pycache__/
 # Operating system
 Thumbs.db
 .DS_Store
+
+data/test/
+error_gallery/

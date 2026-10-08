@@ -341,18 +341,23 @@ def main():
             new_run.stdout
         )
 
-        compare_nested(
-            old_result,
-            new_result,
-            "cli_result",
-        )
+        # TV3 intentionally adds gate/policy fields. Preserve the raw CNN scores.
+        raw_keys = ("fruit", "condition", "fruit_score", "condition_score_given_fruit",
+                    "fruit_scores", "condition_scores_given_fruit", "joint_scores", "checkpoint_epoch")
+        compare_nested({key: old_result[key] for key in raw_keys},
+                       {key: new_result[key] for key in raw_keys}, "raw_cnn_result")
+        from freshlens_ai.inference.cnn_predict import FreshLensPredictor
+        expected = FreshLensPredictor(CHECKPOINT, device="cpu").predict(image_path)
+        policy_keys = ("supported", "status", "gate_supported", "support_threshold", "support_probability")
+        compare_nested({key: expected[key] for key in policy_keys},
+                       {key: new_result[key] for key in policy_keys}, "gate_result")
 
     print(
-        "[OK] End-to-end JSON prediction output matches legacy CLI"
+        "[OK] Raw CNN output matches legacy; CLI policy matches shared TV3 runtime"
     )
 
     print(
-        "[PASS] Stage G3 predictor entry point is behavior-equivalent "
+        "[PASS] Stage G3 preserves CNN behavior and validates gate integration relative "
         "to legacy/development/step3_cnn/PREDICT_CNN.py"
     )
 
