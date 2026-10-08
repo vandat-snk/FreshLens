@@ -1,4 +1,4 @@
-﻿"""Diagnosis page renderer for FreshLens Streamlit UI."""
+"""Diagnosis page renderer for FreshLens Streamlit UI."""
 
 from __future__ import annotations
 
@@ -100,11 +100,12 @@ button[kind="secondary"] { border-radius: 8px; }
 """
 
 
-def render_diagnosis_page(model, metadata, gate, device, analyze_fn) -> None:
+def render_diagnosis_page(model, metadata, gate, device, analyze_fn, show_sidebar: bool = True) -> None:
     """Render the Diagnosis page while preserving the existing inference flow."""
     _init_ui_state()
     _render_styles()
-    _render_sidebar(metadata, gate, device)
+    if show_sidebar:
+        _render_sidebar(metadata, gate, device)
     _render_header()
 
     left, right = st.columns([0.45, 0.55], gap="large")
@@ -266,7 +267,7 @@ def _render_preview() -> None:
             unsafe_allow_html=True,
         )
     with clear_col:
-        if st.button("×", key="clear_upload_preview", help="Xóa ảnh", use_container_width=True):
+        if st.button("×", key="clear_upload_preview", help="Xóa ảnh", width="stretch"):
             _remove_current_image()
             st.rerun()
 
@@ -290,7 +291,7 @@ def _render_result_panel(image_bytes, image_meta, model, gate, device, analyze_f
         )
         return
 
-    if st.button("Phân tích ảnh", type="primary", use_container_width=True):
+    if st.button("Phân tích ảnh", type="primary", width="stretch"):
         _analyze_current_image(image_bytes, model, gate, device, analyze_fn)
 
     result = result_for_image(st.session_state, image_bytes)
