@@ -15,7 +15,6 @@ def render_explanation_page() -> None:
 <div class="fl-header">
   <p class="fl-kicker">Giải thích hệ thống / Explanation</p>
   <h1>FreshLens xử lý ảnh như thế nào?</h1>
-  <p>Ít chữ, đúng flow: từ ảnh đầu vào đến kết quả cuối cùng.</p>
 </div>
 """,
         unsafe_allow_html=True,

@@ -477,6 +477,10 @@ def main():
             ],
         ),
         (
+            "TV3 - shared runtime, evaluation and Grad-CAM",
+            [python, "-m", "pytest", "tests/tv3", "-q"],
+        ),
+        (
             "Stage G4 - Streamlit app",
             [
                 python,

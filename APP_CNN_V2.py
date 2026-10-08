@@ -6,8 +6,7 @@ import torch
 import streamlit as st
 
 from freshlens_ai.constants import PROJECT_DIR
-from freshlens_ai.inference import analyze_bytes, load_gate
-from freshlens_ai.models import load_model
+from freshlens_ai.inference.cnn_predict import FreshLensPredictor
 from ui.about import render_about_page
 from ui.diagnosis import render_diagnosis_page
 from ui.evaluation import render_evaluation_page
@@ -29,21 +28,30 @@ st.set_page_config(
 @st.cache_resource
 def load_runtime():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model, metadata = load_model(CHECKPOINT, device)
-    gate = load_gate(GATE_NPZ, GATE_META, CHECKPOINT)
-    return model, metadata, gate, device
+
+    quality_config_path = PROJECT_DIR / "config" / "quality.json"
+
+    from freshlens_ai.inference.quality import load_quality_config
+
+    quality_config = load_quality_config(quality_config_path)
+
+    return FreshLensPredictor(
+        CHECKPOINT,
+        GATE_NPZ,
+        str(device),
+        gate_meta_path=GATE_META,
+        quality_config=quality_config,
+    )
 
 
 def render_sidebar_navigation() -> str:
     current_page = st.query_params.get("page", "Chẩn đoán")
-
     pages = ["Chẩn đoán", "Đánh giá", "Giải thích", "About"]
 
     with st.sidebar:
         st.markdown(
             """
             <style>
-            /* Sidebar navigation */
             .freshlens-nav {
                 margin-top: 18px;
             }
@@ -86,37 +94,40 @@ def render_sidebar_navigation() -> str:
             nav_html += (
                 f'<a class="{active}" '
                 f'href="?page={page}" target="_self">'
-                f'{page}'
-                f'</a>'
+                f"{page}"
+                f"</a>"
             )
 
         nav_html += "</div>"
-
         st.markdown(nav_html, unsafe_allow_html=True)
 
     return current_page
 
+
 selected_page = render_sidebar_navigation()
+
 
 if selected_page == "Chẩn đoán":
     try:
-        model, metadata, gate, device = load_runtime()
+        predictor = load_runtime()
     except Exception as exc:
         st.error(f"Chưa thể khởi động mô hình: {exc}")
-        st.code(r".\.venv\Scripts\python.exe BUILD_OPENSET_GATE_V2.py --device cuda", language="text")
+        st.code(
+            r".\.venv\Scripts\python.exe BUILD_OPENSET_GATE_V2.py --device cuda",
+            language="text",
+        )
         st.stop()
 
     render_diagnosis_page(
-        model=model,
-        metadata=metadata,
-        gate=gate,
-        device=device,
-        analyze_fn=analyze_bytes,
+        predictor=predictor,
         show_sidebar=False,
     )
+
 elif selected_page == "Đánh giá":
     render_evaluation_page()
+
 elif selected_page == "Giải thích":
     render_explanation_page()
+
 else:
     render_about_page()

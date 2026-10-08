@@ -1,4 +1,4 @@
-"""Diagnosis page renderer for FreshLens Streamlit UI."""
+﻿"""Diagnosis page renderer for FreshLens Streamlit UI."""
 
 from __future__ import annotations
 
@@ -100,7 +100,7 @@ button[kind="secondary"] { border-radius: 8px; }
 """
 
 
-def render_diagnosis_page(model, metadata, gate, device, analyze_fn, show_sidebar: bool = True) -> None:
+def render_diagnosis_page(predictor, show_sidebar: bool = True) -> None:
     """Render the Diagnosis page while preserving the existing inference flow."""
     _init_ui_state()
     _render_styles()
@@ -117,7 +117,7 @@ def render_diagnosis_page(model, metadata, gate, device, analyze_fn, show_sideba
     image_meta = st.session_state.get("current_image_meta")
 
     with right:
-        _render_result_panel(image_bytes, image_meta, model, gate, device, analyze_fn)
+        _render_result_panel(image_bytes, image_meta, predictor)
 
     _render_guidance()
     _render_footer()
@@ -282,7 +282,7 @@ def _render_preview() -> None:
         unsafe_allow_html=True,
     )
 
-def _render_result_panel(image_bytes, image_meta, model, gate, device, analyze_fn) -> None:
+def _render_result_panel(image_bytes, image_meta, predictor) -> None:
     st.markdown('<div class="fl-card-title">Kết quả</div>', unsafe_allow_html=True)
     if image_bytes is None:
         st.markdown(
@@ -292,7 +292,7 @@ def _render_result_panel(image_bytes, image_meta, model, gate, device, analyze_f
         return
 
     if st.button("Phân tích ảnh", type="primary", width="stretch"):
-        _analyze_current_image(image_bytes, model, gate, device, analyze_fn)
+        _analyze_current_image(image_bytes, predictor)
 
     result = result_for_image(st.session_state, image_bytes)
     if not result:
@@ -310,14 +310,26 @@ def _render_result_panel(image_bytes, image_meta, model, gate, device, analyze_f
     _render_technical_details(result)
 
 
-def _analyze_current_image(image_bytes, model, gate, device, analyze_fn) -> None:
+def _analyze_current_image(image_bytes, predictor) -> None:
     try:
         with st.spinner("Đang phân tích..."):
             start_time = time.perf_counter()
-            analyzed = dict(analyze_fn(model, image_bytes, device, gate))
+
+            analyzed = dict(
+                predictor.predict(
+                    image_bytes,
+                    use_tta=False,
+                    check_quality=True,
+                )
+            )
+
             measured_latency_ms = (time.perf_counter() - start_time) * 1000
-            analyzed["latency_ms"] = analyzed.get("latency_ms") or measured_latency_ms
-        store_result(st.session_state, image_bytes, analyzed)
+            analyzed["latency_ms"] = (
+                analyzed.get("latency_ms") or measured_latency_ms
+            )
+
+            store_result(st.session_state, image_bytes, analyzed)
+
     except Exception as exc:
         clear_result(st.session_state)
         st.error(f"Không đọc/nhận diện được ảnh: {exc}")
