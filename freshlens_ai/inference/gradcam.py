@@ -1,72 +1,63 @@
-"""
-freshlens_ai/inference/gradcam.py
-Triển khai Grad-CAM (Gradient-weighted Class Activation Mapping) cho EfficientNet-B0.
-"""
-
+"""Grad-CAM for the fruit-first selected joint class, with removable hooks."""
 import cv2
 import numpy as np
 import torch
-import torch.nn.functional as F
+
+from freshlens_ai.models import decode_probabilities
+
 
 class GradCAM:
     def __init__(self, model, target_layer):
         self.model = model
-        self.target_layer = target_layer
-        self.gradients = None
         self.activations = None
+        self.handle = target_layer.register_forward_hook(self.save_activation)
 
-        # Hook để bắt feature maps và gradients
-        self.target_layer.register_forward_hook(self.save_activation)
-        self.target_layer.register_full_backward_hook(self.save_gradient)
-
-    def save_activation(self, module, input, output):
+    def save_activation(self, module, inputs, output):
         self.activations = output
 
-    def save_gradient(self, module, grad_input, grad_output):
-        self.gradients = grad_output[0]
+    def close(self):
+        self.handle.remove()
+        self.activations = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
     def generate_heatmap(self, input_tensor, class_idx=None):
+        if input_tensor.shape[0] != 1:
+            raise ValueError('Grad-CAM requires one image.')
+        was_training = self.model.training
         self.model.eval()
-        
-        # Forward pass
-        output = self.model(input_tensor)
-        if isinstance(output, tuple):
-            output = output[0]
-
-        if class_idx is None:
-            class_idx = torch.argmax(output, dim=1).item()
-
-        # Backward pass
-        self.model.zero_grad()
-        score = output[0, class_idx]
-        score.backward(retain_graph=True)
-
-        # Tính trọng số alpha k bằng Global Average Pooling của gradients
-        gradients = self.gradients.data.cpu().numpy()[0]
-        activations = self.activations.data.cpu().numpy()[0]
-
-        weights = np.mean(gradients, axis=(1, 2))
-        cam = np.zeros(activations.shape[1:], dtype=np.float32)
-
-        for i, w in enumerate(weights):
-            cam += w * activations[i, :, :]
-
-        # Áp dụng ReLU và chuẩn hóa về [0, 1]
-        cam = np.maximum(cam, 0)
-        if cam.max() > 0:
-            cam = cam / cam.max()
-
-        return cam, class_idx
+        try:
+            with torch.enable_grad():
+                # Works even if all model parameters have been frozen.
+                tensor = input_tensor.detach().clone().requires_grad_(True)
+                output = self.model(tensor)
+                if class_idx is None:
+                    probs = output.detach().float().softmax(1).cpu().numpy()
+                    class_idx = int(decode_probabilities(probs)['joint'][0])
+                if not 0 <= class_idx < output.shape[1]:
+                    raise ValueError('Invalid Grad-CAM target class.')
+                gradients = torch.autograd.grad(output[0, class_idx], self.activations)[0]
+                weights = gradients.mean(dim=(2, 3), keepdim=True)
+                cam = (weights * self.activations).sum(dim=1).relu()[0]
+                maximum = cam.max()
+                if maximum > 0:
+                    cam = cam / maximum
+                return cam.detach().cpu().numpy(), class_idx
+        finally:
+            self.activations = None
+            self.model.train(was_training)
 
 
-def overlay_heatmap(heatmap, original_image_np, alpha=0.5, colormap=cv2.COLORMAP_JET):
-    """
-    Phủ heatmap lên ảnh gốc (RGB)
-    """
-    h, w = original_image_np.shape[:2]
-    resized_heatmap = cv2.resize(heatmap, (w, h))
-    heatmap_colored = cv2.applyColorMap(np.uint8(255 * resized_heatmap), colormap)
-    heatmap_colored = cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)
-
-    overlay = cv2.addWeighted(original_image_np, 1 - alpha, heatmap_colored, alpha, 0)
-    return overlay
+def overlay_heatmap(heatmap, image_rgb, alpha=0.5, colormap=cv2.COLORMAP_JET):
+    """Image must use the same letterbox canvas as the model input."""
+    if not 0 <= alpha <= 1:
+        raise ValueError('Alpha must be between zero and one.')
+    h, w = image_rgb.shape[:2]
+    resized = cv2.resize(heatmap, (w, h))
+    colored = cv2.applyColorMap(np.uint8(255 * np.clip(resized, 0, 1)), colormap)
+    colored = cv2.cvtColor(colored, cv2.COLOR_BGR2RGB)
+    return cv2.addWeighted(image_rgb, 1 - alpha, colored, alpha, 0)

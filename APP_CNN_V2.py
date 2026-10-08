@@ -2,18 +2,20 @@
 
 from __future__ import annotations
 
+import os
+
 import torch
 import streamlit as st
 
 from freshlens_ai.constants import PROJECT_DIR
+from freshlens_ai.data import rgb_from_bytes
 from freshlens_ai.inference import (
-    analyze_bytes,
     clear_result,
-    load_gate,
     result_for_image,
     store_result,
 )
-from freshlens_ai.models import load_model
+from freshlens_ai.inference.cnn_predict import FreshLensPredictor
+from freshlens_ai.inference.quality import DEFAULT_QUALITY_CONFIG, load_quality_config, quality_config_hash
 
 
 CHECKPOINT = (
@@ -106,49 +108,29 @@ st.markdown(
 
 
 @st.cache_resource
-def load_runtime():
+def load_runtime(quality_config):
     device = torch.device(
         "cuda"
         if torch.cuda.is_available()
         else "cpu"
     )
 
-    model, metadata = load_model(
-        CHECKPOINT,
-        device,
-    )
-
-    gate = load_gate(
-        GATE_NPZ,
-        GATE_META,
-        CHECKPOINT,
-    )
-
-    return (
-        model,
-        metadata,
-        gate,
-        device,
+    return FreshLensPredictor(
+        CHECKPOINT, GATE_NPZ, str(device), gate_meta_path=GATE_META, quality_config=quality_config,
     )
 
 
 try:
-    (
-        model,
-        metadata,
-        gate,
-        device,
-    ) = load_runtime()
+    quality_config = load_quality_config(os.environ.get("FRESHLENS_QUALITY_CONFIG", DEFAULT_QUALITY_CONFIG))
+    runtime = load_runtime(quality_config)
+    metadata, gate, device = runtime.metadata, runtime.openset_gate, runtime.device
 
 except Exception as exc:
     st.error(
         f"Chưa thể khởi động mô hình: {exc}"
     )
 
-    st.code(
-        r".\.venv\Scripts\python.exe BUILD_OPENSET_GATE_V2.py --device cuda",
-        language="text",
-    )
+    st.caption("Kiểm tra checkpoint và hai file gate tương ứng trước khi chạy lại.")
 
     st.stop()
 
@@ -183,10 +165,10 @@ with st.sidebar:
                 ].get(
                     "version"
                 ),
-                "known_validation_accept_rate": gate[
+                "known_calibration_accept_rate": gate[
                     "meta"
                 ].get(
-                    "known_validation_accept_rate"
+                    "known_calibration_accept_rate"
                 ),
                 "unknown_calibration_reject_rate": gate[
                     "meta"
@@ -199,6 +181,16 @@ with st.sidebar:
             }
         )
 
+
+quality_enabled = st.sidebar.checkbox(
+    "Thử nghiệm kiểm tra chất lượng ảnh", value=False,
+    help="Ngưỡng chất lượng đang thử nghiệm; cần đánh giá trên ảnh thực tế trước khi dùng mặc định.",
+)
+quality_key = "quality_policy_enabled"
+quality_policy = (quality_enabled, quality_config_hash(quality_config))
+if st.session_state.get(quality_key) != quality_policy:
+    clear_result(st.session_state)
+    st.session_state[quality_key] = quality_policy
 
 source = st.radio(
     "Nguồn ảnh",
@@ -236,6 +228,12 @@ if item is None:
 
 
 image_bytes = item.getvalue()
+try:
+    preview = rgb_from_bytes(image_bytes)
+except Exception as exc:
+    clear_result(st.session_state)
+    st.error(f"Không đọc được ảnh: {exc}")
+    st.stop()
 
 left, right = st.columns(
     [
@@ -248,7 +246,7 @@ left, right = st.columns(
 
 with left:
     st.image(
-        image_bytes,
+        preview,
         caption="Ảnh đầu vào",
         width="stretch",
     )
@@ -264,12 +262,7 @@ with right:
             with st.spinner(
                 "Đang phân tích..."
             ):
-                analyzed = analyze_bytes(
-                    model,
-                    image_bytes,
-                    device,
-                    gate,
-                )
+                analyzed = runtime.predict(image_bytes, check_quality=quality_enabled)
 
             store_result(
                 st.session_state,
@@ -296,14 +289,15 @@ with right:
     )
 
     if result:
-        if not result[
-            "supported"
-        ]:
+        if result["status"] == "quality_rejection":
+            st.warning("Ảnh chưa đạt chất lượng — vui lòng chụp lại.")
+            st.write(result["rejection_reason"])
+        elif not result["supported"]:
             st.markdown(
                 """
 <div class="unsupported">
   <div class="big">
-    Loại quả này hiện chưa được FreshLens hỗ trợ
+    Chưa đủ cơ sở nhận diện trong phạm vi hỗ trợ
   </div>
   <div class="muted">
     Hệ thống hiện hỗ trợ: Táo, Chuối, Cam và Cà chua.
@@ -355,6 +349,7 @@ with right:
                 ),
             )
 
+        st.caption(f"Thời gian phân tích: {result['latency_ms']:.0f} ms")
         with st.expander(
             "Chi tiết kỹ thuật"
         ):
@@ -370,6 +365,7 @@ with right:
                     "fruit_scores": result[
                         "fruit_scores"
                     ],
+                    "quality": result["quality"],
                     "gate": result[
                         "gate_detail"
                     ],
