@@ -37,65 +37,588 @@ GUIDANCE = [
 
 CSS = """
 <style>
+
 :root {
-    --fresh-navy: #16324f;
-    --fresh-green: #1f8a57;
-    --fresh-green-soft: #eaf7ef;
-    --fresh-orange: #b35b13;
-    --fresh-orange-soft: #fff5e7;
-    --fresh-red: #b42318;
-    --fresh-red-soft: #fff0f0;
-    --fresh-border: #d9e2ec;
-    --fresh-muted: #62748a;
-    --fresh-panel: #ffffff;
-    --fresh-bg: #f6f8fb;
+    --fresh-dark: #16352a;
+    --fresh-green: #3fa66b;
+    --fresh-green-dark: #2f7d50;
+    --fresh-green-soft: #e8f5ea;
+    --fresh-cream: #faf9f5;
+    --fresh-white: #ffffff;
+    --fresh-border: #e2e9e4;
+    --fresh-muted: #718078;
+
+    --fresh-orange: #ff9f43;
+    --fresh-orange-soft: #fff5e8;
+
+    --fresh-red: #ff5b5b;
+    --fresh-red-soft: #fff0ef;
+
+    --fresh-blue-soft: #eef6fa;
 }
-.stApp { background: var(--fresh-bg); }
-.block-container { max-width: 1220px; padding-top: 1.25rem; padding-bottom: 2rem; }
-[data-testid="stSidebar"] { background: #ffffff; border-right: 1px solid var(--fresh-border); }
-[data-testid="stSidebar"] h1 { color: var(--fresh-navy); font-size: 1.55rem; margin-bottom: 1.1rem; }
-.fl-nav-item { padding: .62rem .78rem; border-radius: 8px; color: #334155; font-weight: 650; margin-bottom: .25rem; }
-.fl-nav-item.active { color: #fff; background: var(--fresh-navy); }
-.fl-header { margin-bottom: 1.2rem; }
-.fl-header h1 { margin: 0 0 .28rem; color: var(--fresh-navy); font-size: 2rem; letter-spacing: 0; }
-.fl-header p { margin: 0; color: var(--fresh-muted); max-width: 760px; }
-.fl-card { background: var(--fresh-panel); border: 1px solid var(--fresh-border); border-radius: 8px; box-shadow: 0 10px 24px rgba(22,50,79,.06); padding: 1rem; }
-.fl-card-title { font-size: .95rem; color: var(--fresh-navy); font-weight: 750; margin-bottom: .55rem; }
-.fl-upload-empty { border: 1px dashed #b6c3d1; border-radius: 8px; padding: .65rem .75rem; background: #fbfdff; font-size: .88rem; }
-.fl-preview-shell { border: 1px solid var(--fresh-border); border-radius: 8px; background: #fff; padding: .55rem; }
-.fl-preview-tools { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .45rem; color: var(--fresh-muted); font-size: .82rem; }
-.fl-preview-title { color: var(--fresh-navy); font-weight: 750; }
-.fl-preview-image img { display: block; width: 100%; max-height: 330px; object-fit: contain; border-radius: 6px; background: #fbfdff; }
-.fl-empty-preview { min-height: 245px; display: flex; align-items: center; justify-content: center; color: var(--fresh-muted); border: 1px dashed #c7d2df; border-radius: 8px; background: #fbfdff; text-align: center; padding: 1rem; }
-.fl-empty-title { color: var(--fresh-navy); font-weight: 800; font-size: 1.05rem; margin-bottom: .35rem; }
-.fl-empty-meta { font-size: .88rem; line-height: 1.5; }
-.fl-result-head { color: var(--fresh-navy); font-weight: 800; margin-bottom: .75rem; font-size: 1.08rem; }
-.fl-result-card { border: 1px solid #b7dfc7; background: var(--fresh-green-soft); border-radius: 8px; padding: 1rem; }
-.fl-result-flex { display: flex; gap: .9rem; align-items: center; }
-.fl-thumb { width: 86px; height: 86px; object-fit: cover; border-radius: 8px; border: 1px solid #b7dfc7; background: #fff; }
-.fl-fruit { color: var(--fresh-navy); font-size: 1.65rem; font-weight: 850; line-height: 1.1; }
-.fl-condition { color: #334155; margin-top: .35rem; }
-.fl-badge { display: inline-block; margin-top: .55rem; padding: .25rem .52rem; border-radius: 999px; background: #d9f2e3; color: var(--fresh-green); font-size: .78rem; font-weight: 800; }
-.fl-warning { border: 1px solid #f0c36a; background: var(--fresh-orange-soft); border-radius: 8px; padding: 1rem; color: #55310a; }
-.fl-warning h3 { margin: 0 0 .45rem; color: var(--fresh-orange); font-size: 1.08rem; }
-.fl-error { border: 1px solid #f0b4ad; background: var(--fresh-red-soft); border-radius: 8px; padding: 1rem; color: #5f1712; }
-.fl-error h3 { margin: 0 0 .45rem; color: var(--fresh-red); font-size: 1.08rem; }
-.fl-guidance-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .72rem; }
-.fl-guide { border: 1px solid var(--fresh-border); background: #fff; border-radius: 8px; padding: .68rem .72rem; min-height: 72px; display: flex; gap: .58rem; align-items: center; }
-.fl-guide-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--fresh-green-soft); color: var(--fresh-green); display: flex; align-items: center; justify-content: center; font-weight: 850; font-size: .8rem; flex: 0 0 auto; }
-.fl-guide-text { color: #233348; font-size: .9rem; line-height: 1.35; }
-.fl-muted { color: var(--fresh-muted); }
-button[kind="secondary"] { border-radius: 8px; }
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.stApp {
+    background:
+        radial-gradient(
+            circle at 82% 8%,
+            rgba(168, 230, 157, .20),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 12% 92%,
+            rgba(168, 230, 157, .10),
+            transparent 25%
+        ),
+        var(--fresh-cream);
+}
+
+.block-container {
+    max-width: 1220px;
+    padding-top: 1.35rem;
+    padding-bottom: 2rem;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+[data-testid="stSidebar"] {
+    background: var(--fresh-white);
+    border-right: 1px solid var(--fresh-border);
+}
+
+[data-testid="stSidebar"] h1 {
+    color: var(--fresh-dark);
+    font-size: 1.55rem;
+    margin-bottom: 1.1rem;
+}
+
+.fl-nav-item {
+    padding: .68rem .8rem;
+    border-radius: 10px;
+    color: #40534a;
+    font-weight: 650;
+    margin-bottom: .28rem;
+}
+
+.fl-nav-item.active {
+    color: var(--fresh-white);
+    background: var(--fresh-dark);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.fl-header {
+    margin-bottom: 1.25rem;
+}
+
+.fl-header h1 {
+    margin: 0 0 .3rem;
+    color: var(--fresh-dark);
+    font-size: 2rem;
+    font-weight: 850;
+    letter-spacing: -.025em;
+}
+
+.fl-header p {
+    margin: 0;
+    color: var(--fresh-muted);
+    max-width: 760px;
+}
+
+
+/* =========================================================
+   GENERAL CARD
+   ========================================================= */
+
+.fl-card {
+    background: var(--fresh-white);
+    border: 1px solid var(--fresh-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(22, 53, 42, .055);
+    padding: 1.05rem;
+}
+
+.fl-card-title {
+    font-size: .95rem;
+    color: var(--fresh-dark);
+    font-weight: 800;
+    margin-bottom: .6rem;
+}
+
+
+/* =========================================================
+   INPUT / UPLOAD
+   ========================================================= */
+
+.fl-upload-empty {
+    border: 1px dashed #c9d9cf;
+    border-radius: 12px;
+    padding: .75rem;
+    background: #fbfdfb;
+    font-size: .88rem;
+}
+
+.fl-preview-shell {
+    border: 1px solid var(--fresh-border);
+    border-radius: 14px;
+    background: var(--fresh-white);
+    padding: .55rem;
+}
+
+.fl-preview-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: .5rem;
+    color: var(--fresh-muted);
+    font-size: .82rem;
+}
+
+.fl-preview-title {
+    color: var(--fresh-dark);
+    font-weight: 800;
+}
+
+.fl-preview-image img {
+    display: block;
+    width: 100%;
+    max-height: 330px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fbfdfb;
+}
+
+.fl-empty-preview {
+    min-height: 245px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--fresh-muted);
+
+    border: 1px dashed #c9d9cf;
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fbfdfb 0%,
+            #f7fbf8 100%
+        );
+
+    text-align: center;
+    padding: 1rem;
+}
+
+.fl-empty-title {
+    color: var(--fresh-dark);
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: .35rem;
+}
+
+.fl-empty-meta {
+    font-size: .88rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   RESULT HEADER
+   ========================================================= */
+
+.fl-result-head {
+    color: var(--fresh-dark);
+    font-weight: 800;
+    margin-bottom: .75rem;
+    font-size: 1.08rem;
+}
+
+.fl-result-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: .75rem;
+}
+
+.fl-result-heading {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+}
+
+.fl-step-number {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+
+    border-radius: 50%;
+
+    background: var(--fresh-green-soft);
+    color: var(--fresh-green-dark);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.15rem;
+    font-weight: 850;
+}
+
+.fl-step-title {
+    color: var(--fresh-dark);
+    font-size: 1.3rem;
+    font-weight: 850;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   EMPTY RESULT
+   ========================================================= */
+
+.fl-result-empty {
+    min-height: 245px;
+
+    border: 1px dashed #cbded2;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fcfefd 0%,
+            #f7fbf8 100%
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 1.5rem;
+
+    color: var(--fresh-muted);
+}
+
+.fl-result-empty-inner {
+    max-width: 330px;
+}
+
+.fl-result-empty-icon {
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto .8rem;
+
+    border-radius: 50%;
+
+    background: var(--fresh-green-soft);
+    color: var(--fresh-green);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.35rem;
+    font-weight: 850;
+}
+
+.fl-result-empty-title {
+    color: #62736b;
+    font-size: .92rem;
+    font-weight: 550;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SUCCESS RESULT
+   ========================================================= */
+
+.fl-result-card {
+    border: 1px solid #d8e9de;
+    background: var(--fresh-white);
+    border-radius: 15px;
+    padding: 1rem;
+
+    box-shadow: 0 5px 18px rgba(22, 53, 42, .055);
+}
+
+.fl-result-flex {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.fl-thumb {
+    width: 92px;
+    height: 92px;
+    min-width: 92px;
+
+    object-fit: cover;
+
+    border-radius: 13px;
+    border: 1px solid #dce9df;
+
+    background: #f7faf8;
+}
+
+.fl-result-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.fl-fruit {
+    color: var(--fresh-dark);
+    font-size: 1.5rem;
+    font-weight: 850;
+    line-height: 1.15;
+}
+
+.fl-condition {
+    color: var(--fresh-green);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: .35rem;
+}
+
+.fl-badge {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: .55rem;
+
+    padding: .3rem .65rem;
+
+    border-radius: 999px;
+
+    background: var(--fresh-green-soft);
+    color: var(--fresh-green-dark);
+
+    font-size: .76rem;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   METRICS
+   ========================================================= */
+
+div[data-testid="stMetric"] {
+    background: var(--fresh-white);
+
+    border: 1px solid #e1ebe4;
+    border-radius: 12px;
+
+    padding: .7rem .8rem;
+
+    box-shadow: none;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: var(--fresh-muted) !important;
+    font-size: .72rem !important;
+}
+
+div[data-testid="stMetricValue"] {
+    color: var(--fresh-dark) !important;
+    font-size: 1.2rem !important;
+    font-weight: 850 !important;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+div.stButton > button[kind="primary"] {
+    background: var(--fresh-red);
+    border: 1px solid var(--fresh-red);
+    color: #ffffff;
+
+    border-radius: 11px;
+
+    min-height: 44px;
+
+    font-size: .94rem;
+    font-weight: 800;
+
+    box-shadow: 0 5px 14px rgba(255, 91, 91, .18);
+}
+
+div.stButton > button[kind="primary"]:hover {
+    background: #f24d4d;
+    border-color: #f24d4d;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+button[kind="secondary"] {
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   WARNING / ERROR
+   ========================================================= */
+
+.fl-warning {
+    border: 1px solid #f2c979;
+    background: var(--fresh-orange-soft);
+    border-radius: 13px;
+    padding: 1rem;
+    color: #68400e;
+}
+
+.fl-warning h3 {
+    margin: 0 0 .45rem;
+    color: #d17b16;
+    font-size: 1.05rem;
+}
+
+.fl-error {
+    border: 1px solid #f2b8b3;
+    background: var(--fresh-red-soft);
+    border-radius: 13px;
+    padding: 1rem;
+    color: #6b201a;
+}
+
+.fl-error h3 {
+    margin: 0 0 .45rem;
+    color: var(--fresh-red);
+    font-size: 1.05rem;
+}
+
+
+/* =========================================================
+   PHOTO GUIDANCE
+   ========================================================= */
+
+.fl-guidance-box {
+    margin-top: .8rem;
+    padding: .85rem 1rem;
+
+    background: #fffdf7;
+    border: 1px solid #ead9a8;
+    border-radius: 14px;
+
+    box-shadow: 0 3px 10px rgba(120, 95, 35, .035);
+}
+
+.fl-guidance-title {
+    color: #5f512d;
+    font-size: .92rem;
+    font-weight: 850;
+    margin-bottom: .6rem;
+}
+
+.fl-guidance-list {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.fl-guidance-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    padding: .18rem 0;
+}
+
+.fl-guidance-number {
+    width: 27px;
+    height: 27px;
+    min-width: 27px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8f5ea;
+    color: #2f7d50;
+
+    font-size: .75rem;
+    font-weight: 850;
+}
+
+.fl-guidance-text {
+    color: #40534a;
+    font-size: .82rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 900px) {
-    .fl-guidance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .fl-guidance-grid {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    }
+
 }
+
 @media (max-width: 640px) {
-    .block-container { padding-left: 1rem; padding-right: 1rem; }
-    .fl-header h1 { font-size: 1.55rem; }
-    .fl-guidance-grid { grid-template-columns: 1fr; }
-    .fl-result-flex { align-items: flex-start; }
-    .fl-thumb { width: 72px; height: 72px; }
+
+    .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .fl-header h1 {
+        font-size: 1.55rem;
+    }
+
+    .fl-guidance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fl-result-flex {
+        align-items: flex-start;
+    }
+
+    .fl-thumb {
+        width: 72px;
+        height: 72px;
+        min-width: 72px;
+    }
+
+    .fl-result-panel-head {
+        align-items: flex-start;
+    }
+
+    .fl-step-title {
+        font-size: 1.15rem;
+    }
+
 }
+
 </style>
 """
 
@@ -118,8 +641,8 @@ def render_diagnosis_page(predictor, show_sidebar: bool = True) -> None:
 
     with right:
         _render_result_panel(image_bytes, image_meta, predictor)
+        _render_guidance()
 
-    _render_guidance()
     _render_footer()
 
 
@@ -307,7 +830,6 @@ def _render_result_panel(image_bytes, image_meta, predictor) -> None:
     else:
         _render_openset_rejection(result)
 
-    _render_technical_details(result)
 
 
 def _analyze_current_image(image_bytes, predictor) -> None:
@@ -413,14 +935,36 @@ def _render_technical_details(result: dict[str, Any]) -> None:
 
 def _render_guidance() -> None:
     st.write("")
-    st.markdown('<div class="fl-card-title">Hướng dẫn chụp ảnh</div>', unsafe_allow_html=True)
-    cards = []
-    for index, item in enumerate(GUIDANCE, 1):
-        cards.append(
-            f'<div class="fl-guide"><div class="fl-guide-icon">{index}</div><div class="fl-guide-text">{html.escape(item)}</div></div>'
-        )
-    st.markdown(f'<div class="fl-guidance-grid">{"".join(cards)}</div>', unsafe_allow_html=True)
 
+    items = []
+
+    for index, item in enumerate(GUIDANCE, 1):
+        items.append(
+            f"""
+            <div class="fl-guidance-item">
+                <div class="fl-guidance-number">{index}</div>
+                <div class="fl-guidance-text">
+                    {html.escape(item)}
+                </div>
+            </div>
+            """
+        )
+
+    st.html(
+        f"""
+        <div class="fl-guidance-box">
+
+            <div class="fl-guidance-title">
+                Hướng dẫn chụp ảnh
+            </div>
+
+            <div class="fl-guidance-list">
+                {"".join(items)}
+            </div>
+
+        </div>
+        """
+    )
 
 def _render_footer() -> None:
     st.divider()

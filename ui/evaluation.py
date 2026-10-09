@@ -8,7 +8,7 @@ import json
 
 import pandas as pd
 import streamlit as st
-
+import altair as alt
 from freshlens_ai.constants import CLASSES, FRUITS, PROJECT_DIR, STATUSES
 
 
@@ -197,9 +197,42 @@ def _line_chart(
         st.info(f"Dữ liệu cho {title} chưa có.")
         return
 
-    chart_df = history[[epoch, *columns]].copy().set_index(epoch)
-    chart_df.columns = [_pretty_metric_name(col) for col in chart_df.columns]
-    st.line_chart(chart_df, width="stretch", height=300)
+    
+    chart_df = history[[epoch, *columns]].copy()
+    chart_df = chart_df.rename(columns={epoch: "Epoch"})
+    chart_df = chart_df.melt(
+        id_vars="Epoch",
+        var_name="Metric",
+        value_name="Value",
+    )
+    chart_df["Metric"] = chart_df["Metric"].map(_pretty_metric_name)
+
+    pastel_colors = [
+        "#A8D5B5",  # xanh lá nhạt
+        "#79B995",  # xanh lá dịu
+        "#D5E8D9",  # xanh bạc hà
+        "#B7CDBD",  # xanh xám nhạt
+    ]
+
+    chart = (
+        alt.Chart(chart_df)
+        .mark_line(point=True, strokeWidth=2.5)
+        .encode(
+            x=alt.X("Epoch:Q", title="Epoch"),
+            y=alt.Y("Value:Q", title=title),
+            color=alt.Color(
+                "Metric:N",
+                scale=alt.Scale(range=pastel_colors),
+                legend=alt.Legend(title=None),
+            ),
+            tooltip=["Epoch:Q", "Metric:N", "Value:Q"],
+        )
+        .properties(height=300)
+        .interactive()
+    )
+
+    st.altair_chart(chart, width="stretch")
+
 
 
 def _render_confusion_matrix(metrics: dict[str, Any]) -> None:
@@ -220,7 +253,7 @@ def _render_confusion_matrix(metrics: dict[str, Any]) -> None:
 
     styled = (
         df.style
-        .background_gradient(cmap="Blues", axis=None)
+        .background_gradient(cmap="Greens", axis=None, vmin=0)
         .format("{:.0f}")
         .set_properties(**{"text-align": "center"})
     )
@@ -256,13 +289,23 @@ def _render_per_class_f1(metrics: dict[str, Any]) -> None:
     df = pd.DataFrame(rows).sort_values("F1", ascending=True)
     chart_df = df.set_index("Class")[["F1"]]
 
-    st.bar_chart(
-        chart_df,
-        y="F1",
-        horizontal=True,
-        width="stretch",
-        height=360,
+    
+    chart = (
+        alt.Chart(chart_df.reset_index())
+        .mark_bar(
+            color="#A8D5B5",
+            cornerRadiusEnd=5,
+        )
+        .encode(
+            x=alt.X("F1:Q", title="F1 Score"),
+            y=alt.Y("Class:N", sort="-x", title=None),
+            tooltip=["Class:N", alt.Tooltip("F1:Q", format=".2%")],
+        )
+        .properties(height=360)
     )
+
+    st.altair_chart(chart, width="stretch")
+
 
     lowest = df.iloc[0]
     st.caption(f"Lowest F1: {lowest['Class']} · {lowest['F1']:.2%}")
@@ -290,7 +333,23 @@ def _render_external_benchmark(external: dict[str, Any] | None) -> None:
         {"Metric": list(values.keys()), "Value": list(values.values())}
     ).set_index("Metric")
 
-    st.bar_chart(df, y="Value", width="stretch", height=300)
+    
+    chart = (
+        alt.Chart(df.reset_index())
+        .mark_bar(
+            color="#C8E6CF",
+            cornerRadiusEnd=5,
+        )
+        .encode(
+            x=alt.X("Value:Q", title="Score"),
+            y=alt.Y("Metric:N", sort="-x", title=None),
+            tooltip=["Metric:N", alt.Tooltip("Value:Q", format=".2%")],
+        )
+        .properties(height=300)
+    )
+
+    st.altair_chart(chart, width="stretch")
+
 
 
 def _extract_numeric_metrics(
@@ -329,44 +388,130 @@ def _render_styles() -> None:
     st.markdown(
         """
         <style>
+        :root {
+            --fresh-dark: #16352a;
+            --fresh-green: #3fa66b;
+            --fresh-green-dark: #2f7d50;
+            --fresh-green-soft: #e8f5ea;
+            --fresh-cream: #faf9f5;
+            --fresh-white: #ffffff;
+            --fresh-border: #e2e9e4;
+            --fresh-muted: #718078;
+        }
+
+        .stApp {
+            background: #faf9f5;
+        }
+
+        .block-container {
+            max-width: 1220px;
+            padding-top: 2rem;
+            padding-bottom: 2.5rem;
+        }
+
         .fl-header {
-            margin-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
         }
 
         .fl-header h1 {
-            margin: 0 0 .25rem;
-            color: #16324f;
+            margin: 0 0 .35rem;
+            color: #16352a;
             font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.035em;
         }
 
         .fl-header p {
             margin: 0;
-            color: #62748a;
+            color: #718078;
+            font-size: .95rem;
+        }
+
+        [data-testid="stCaptionContainer"] p {
+            color: #718078;
+        }
+
+        [data-testid="stMetric"] {
+            background: #ffffff;
+            border: 1px solid #e2e9e4;
+            border-radius: 16px;
+            padding: 1rem 1.1rem;
+            box-shadow: 0 3px 12px rgba(22, 53, 42, .035);
+        }
+
+        [data-testid="stMetricLabel"] {
+            color: #718078;
+            font-size: .83rem;
+            font-weight: 600;
+        }
+
+        [data-testid="stMetricValue"] {
+            color: #2f7d50;
+            font-weight: 800;
+        }
+
+        [data-testid="stVerticalBlock"] > div:has(> [data-testid="stTabs"]) {
+            margin-top: .3rem;
+        }
+
+        [data-testid="stTabs"] [data-baseweb="tab-list"] {
+            gap: .45rem;
+            border-bottom: 1px solid #e2e9e4;
+        }
+
+        [data-testid="stTabs"] button[data-baseweb="tab"] {
+            color: #718078;
+            border-radius: 10px 10px 0 0;
+            padding: .6rem 1rem;
+        }
+
+        [data-testid="stTabs"] button[data-baseweb="tab"][aria-selected="true"] {
+            color: #2f7d50;
+            border-bottom-color: #8bc9a0;
+            font-weight: 750;
+        }
+
+        h2, h3 {
+            color: #16352a !important;
+            font-weight: 750 !important;
+            letter-spacing: -0.02em;
         }
 
         .fl-info-grid {
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: .65rem;
-            margin: .7rem 0 1.35rem;
+            gap: .75rem;
+            margin: .8rem 0 1.5rem;
         }
 
         .fl-info {
-            background: #fff;
-            border: 1px solid #d9e2ec;
-            border-radius: 8px;
-            padding: .65rem .75rem;
+            background: #ffffff;
+            border: 1px solid #e2e9e4;
+            border-radius: 15px;
+            padding: .9rem 1rem;
+            box-shadow: 0 3px 12px rgba(22, 53, 42, .03);
         }
 
         .fl-info div {
-            color: #62748a;
+            color: #718078;
             font-size: .78rem;
-            margin-bottom: .2rem;
+            margin-bottom: .35rem;
         }
 
         .fl-info strong {
-            color: #16324f;
-            font-size: .95rem;
+            color: #2f7d50;
+            font-size: .98rem;
+            font-weight: 750;
+        }
+
+        [data-testid="stAlert"] {
+            border-radius: 12px;
+        }
+
+        [data-testid="stDataFrame"] {
+            border: 1px solid #e2e9e4;
+            border-radius: 14px;
+            overflow: hidden;
         }
 
         @media (max-width: 1100px) {
@@ -379,12 +524,15 @@ def _render_styles() -> None:
             .fl-info-grid {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .fl-header h1 {
+                font-size: 1.65rem;
+            }
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 
 def _find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
     lookup = {col.lower(): col for col in df.columns}
