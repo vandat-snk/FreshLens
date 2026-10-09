@@ -270,50 +270,49 @@ def load_gate(
             "Hãy tạo lại open-set gate."
         )
 
-    data = np.load(
-        npz_path,
-        allow_pickle=False,
-    )
-
     required = {
-        "prototypes",
-        "scaler_mean",
-        "scaler_scale",
-        "coef",
-        "intercept",
-        "decision_threshold",
+        "prototypes", "scaler_mean", "scaler_scale", "coef",
+        "intercept", "decision_threshold",
     }
+    with np.load(npz_path, allow_pickle=False) as archive:
+        if not required.issubset(archive.files):
+            raise DataError("Open-set gate thiếu trường bắt buộc.")
+        data = {key: archive[key].astype(np.float64) for key in required}
 
-    if not required.issubset(
-        data.files
-    ):
-        raise DataError(
-            "Open-set gate không đúng định dạng."
-        )
+    if not all(np.isfinite(value).all() for value in data.values()):
+        raise DataError("Open-set gate chứa NaN hoặc Infinity.")
+    prototypes = data["prototypes"]
+    if (prototypes.ndim != 3 or prototypes.shape[0] != len(FRUITS)
+            or prototypes.shape[1] < 1 or prototypes.shape[2] != 1280):
+        raise DataError("Gate prototypes phải có kích thước (4, K, 1280), K >= 1.")
+    if np.any(np.linalg.norm(prototypes, axis=2) == 0):
+        raise DataError("Gate prototype không được là vector zero.")
+    for key in ("scaler_mean", "scaler_scale", "coef"):
+        if data[key].shape != (6,):
+            raise DataError(f"Gate {key} phải có đúng 6 phần tử.")
+    if np.any(data["scaler_scale"] <= 0):
+        raise DataError("Gate scaler_scale phải dương.")
+    for key in ("intercept", "decision_threshold"):
+        if data[key].shape not in ((), (1,)):
+            raise DataError(f"Gate {key} phải có đúng một giá trị.")
+    threshold = float(data["decision_threshold"].reshape(-1)[0])
+    if not 0 <= threshold <= 1:
+        raise DataError("Gate threshold phải nằm trong [0, 1].")
+    if "chosen_threshold" in meta:
+        saved_threshold = float(meta["chosen_threshold"])
+        if not np.isfinite(saved_threshold) or not np.isclose(
+                threshold, saved_threshold, rtol=0, atol=1e-12):
+            raise DataError("Gate threshold trong NPZ và JSON không khớp.")
+    if meta.get("supported_fruits", list(FRUITS)) != list(FRUITS):
+        raise DataError("Thứ tự loại quả của gate không khớp model.")
 
     return {
-        "prototypes": data[
-            "prototypes"
-        ].astype(np.float32),
-        "scaler_mean": data[
-            "scaler_mean"
-        ].astype(np.float64),
-        "scaler_scale": data[
-            "scaler_scale"
-        ].astype(np.float64),
-        "coef": data[
-            "coef"
-        ].astype(np.float64),
-        "intercept": float(
-            data[
-                "intercept"
-            ].reshape(-1)[0]
-        ),
-        "decision_threshold": float(
-            data[
-                "decision_threshold"
-            ].reshape(-1)[0]
-        ),
+        "prototypes": prototypes.astype(np.float32),
+        "scaler_mean": data["scaler_mean"],
+        "scaler_scale": data["scaler_scale"],
+        "coef": data["coef"],
+        "intercept": float(data["intercept"].reshape(-1)[0]),
+        "decision_threshold": threshold,
         "meta": meta,
     }
 

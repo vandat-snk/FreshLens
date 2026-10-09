@@ -1,0 +1,9 @@
+{
+  "target_class": "apple::fresh",
+  "class_index": 0,
+  "checkpoint_epoch": 9,
+  "checkpoint_sha256": "134c2555f7b018012565886e54f7a30e99dd4c07b00284b9b57c37e1d50f9bf4",
+  "image_sha256": "59036e4df8c3d34af2536ebcec7c1b36ec8ff569b8ff4a24eae943d29790a71a",
+  "canvas": "production white letterbox 224x224",
+  "note": "Grad-CAM shows contributions to the raw CNN prediction, not a rotten-region segmentation or gate acceptance."
+}

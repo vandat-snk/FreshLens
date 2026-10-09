@@ -411,7 +411,18 @@ Choose CUDA explicitly when desired:
 .\.venv\Scripts\python.exe PREDICT_CNN_V2.py --image "D:\path\to\fruit.jpg" --device cuda
 ```
 
-The command prints a JSON result containing fruit, condition, fruit probability, conditional condition probability, and joint-class scores.
+The command uses the same `FreshLensPredictor` runtime as the app and TV3 evaluator.
+Its JSON includes raw fruit/condition scores, gate score and threshold, final acceptance
+status, quality diagnostics, and latency. Raw predictions remain available for audit
+when rejected; check `supported` before presenting them as accepted results.
+The matching gate is required. Use `--gate-npz` and `--gate-meta` to override its paths.
+CLI quality rejection is opt-in with `--quality`; use this flag when comparing against the Nhi UI, which always enables quality checks.
+App, CLI and evaluator share `config/quality.json`. CLI/evaluator accept
+`--quality-config`; the app accepts the `FRESHLENS_QUALITY_CONFIG` environment variable.
+Evaluation exports the effective `quality_config.json` and its hash for reuse.
+
+For manifest-based policy evaluation and raw-photo Grad-CAM, see
+[TV3 repair and evaluation guide](docs/TV3_FIXES.md).
 
 ## Training
 
@@ -506,6 +517,11 @@ To inspect the builder options:
 .\.venv\Scripts\python.exe BUILD_OPENSET_GATE_V2.py --help
 ```
 
+TV3 uses the saved threshold and fails explicitly if gate loading or inference fails.
+The Nhi UI always enables quality rejection. Its thresholds still need real-image calibration.
+CLI and evaluator keep quality opt-in via `--quality` for CNN baseline experiments.
+TTA is disabled pending a separate benchmark and compatible gate calibration.
+
 Rebuilding the gate changes the calibrated artifact. Do it only as a deliberate experiment with a documented calibration dataset.
 
 ## Tests
@@ -527,7 +543,10 @@ Run the complete integration suite:
   --data "data\cnn_dataset_v3"
 ```
 
-The full suite additionally audits modular import boundaries and performs a production checkpoint + open-set gate smoke test.
+The full suite additionally runs the TV3 runtime/evaluation/Grad-CAM tests, audits modular
+import boundaries, and performs a production checkpoint + open-set gate smoke test.
+The CLI contract test preserves raw CNN scores while checking its new shared gate policy;
+the CLI now intentionally returns more fields than the archived closed-set CLI.
 
 Passing the software tests verifies implementation consistency. It does **not** by itself prove generalization to every real-world camera/domain condition.
 
