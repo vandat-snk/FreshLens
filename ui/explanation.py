@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import streamlit as st
+from pathlib import Path
 
 from freshlens_ai.constants import PREPROCESS
 
@@ -41,37 +42,38 @@ def _pipeline() -> None:
     steps = [
         (
             "User Upload / Camera",
-            "Người dùng chọn ảnh hoặc chụp ảnh trong giao diện Streamlit.",
+            "Nhận ảnh từ người dùng dưới dạng bytes thông qua upload hoặc camera.",
         ),
         (
-            "Preprocessing",
-            "Ảnh được chuẩn hóa theo pipeline production trước khi vào model.",
+            "Image Decoding",
+            "Đọc ảnh bằng Pillow, xử lý EXIF orientation, chuyển sang RGB và ghép kênh alpha lên nền trắng nếu cần.",
         ),
         (
-            "Tensor",
-            "Ảnh sau xử lý được đổi thành tensor PyTorch.",
+            "Quality Check",
+            "Đánh giá kích thước, độ mờ và độ sáng của ảnh.",
+        ),
+        (
+            "Image Preprocessing",
+            "Letterbox ảnh về 224x224, chuyển thành tensor PyTorch và chuẩn hóa theo cấu hình của model.",
         ),
         (
             "EfficientNet-B0",
-            "EfficientNet-B0 trích xuất đặc trưng và tạo output cho 8 joint classes.",
+            "Trích xuất đặc trưng ảnh và tạo logits cho 8 lớp kết hợp loại quả và tình trạng.",
         ),
         (
-            "8 Joint Classes",
-            "Softmax tạo xác suất cho các cặp fruit và Fresh/Rotten.",
-        ),
-        (
-            "Fruit-first Decoder",
-            "Chọn loại quả trước, sau đó xác định Fresh/Rotten.",
+            "Softmax & Fruit-first Decoder",
+            "Chuyển logits thành xác suất, chọn loại quả theo tổng xác suất Fresh/Rotten, sau đó xác định tình trạng.",
         ),
         (
             "Open-set Gate",
-            "Kiểm tra ảnh có thuộc phạm vi các fruit được hỗ trợ hay không.",
+            "Đánh giá mức độ phù hợp của ảnh với phạm vi các loại quả được hỗ trợ.",
         ),
         (
             "Final Result",
-            "UI hiển thị kết quả dự đoán hoặc trạng thái ngoài phạm vi hỗ trợ.",
+            "Hiển thị kết quả dự đoán hoặc trạng thái từ chối do chất lượng ảnh hay ngoài phạm vi hỗ trợ.",
         ),
     ]
+
 
     for index, (title, body) in enumerate(steps, start=1):
         st.markdown(
@@ -138,34 +140,72 @@ def _preprocessing() -> None:
 
 
 def _gradcam_status() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    image_path = project_root / "eval_results" / "fruit_input_ai_demo.png"
+    gradcam_path = project_root / "eval_results" / "gradcam_fruit_ai_demo.png"
+
     st.markdown(
         """
-<section class="fl-section">
-  <div class="fl-section-head">
-    <h2>Grad-CAM</h2>
-    <p>Minh họa vùng ảnh có đóng góp vào class prediction trong phần explainability.</p>
-  </div>
-  <div class="fl-gradcam-grid">
-    <div class="fl-preview">
-      <strong>Ảnh gốc</strong>
-      <div class="fl-placeholder">Input image</div>
-    </div>
-    <div class="fl-preview">
-      <strong>Grad-CAM</strong>
-      <div class="fl-placeholder">Chưa có output</div>
-    </div>
-    <div class="fl-note-card">
-    <strong>Giải thích dự đoán</strong>
-    <p>Grad-CAM giúp trực quan hóa những vùng trên ảnh có ảnh hưởng đến kết quả dự đoán của mô hình.</p>
-    <p class="fl-note">
-        Lưu ý: Bản đồ Grad-CAM thể hiện mức độ đóng góp vào dự đoán, không xác định chính xác vị trí hoặc ranh giới vùng trái cây bị hỏng.
-    </p>
-    </div>
-  </div>
-</section>
-""",
+        <section class="fl-section">
+          <div class="fl-section-head">
+            <h2>Grad-CAM</h2>
+            <p>
+              Minh họa vùng ảnh có đóng góp vào class prediction
+              trong phần explainability.
+            </p>
+          </div>
+        </section>
+        """,
         unsafe_allow_html=True,
     )
+
+    col_original, col_gradcam, col_note = st.columns(
+        [1, 1, 1.2],
+        gap="medium",
+    )
+
+    with col_original:
+        st.markdown("**Ảnh gốc**")
+
+        if image_path.is_file():
+            st.image(
+                str(image_path),
+                caption="Input image",
+                use_container_width=True,
+            )
+        else:
+            st.warning("Không tìm thấy ảnh đầu vào.")
+
+    with col_gradcam:
+        st.markdown("**Grad-CAM**")
+
+        if gradcam_path.is_file():
+            st.image(
+                str(gradcam_path),
+                caption="Grad-CAM visualization",
+                use_container_width=True,
+            )
+        else:
+            st.warning("Không tìm thấy ảnh Grad-CAM.")
+
+    with col_note:
+        st.markdown(
+            """
+            <div class="fl-note-card">
+              <strong>Giải thích dự đoán</strong>
+              <p>
+                Grad-CAM giúp trực quan hóa những vùng trên ảnh
+                có ảnh hưởng đến kết quả dự đoán của mô hình.
+              </p>
+              <p class="fl-note">
+                Bản đồ Grad-CAM thể hiện mức độ đóng góp vào dự đoán,
+                không xác định chính xác vị trí hoặc ranh giới vùng
+                trái cây bị hỏng.
+              </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 def _fmt_vector(values: list[float]) -> str:
