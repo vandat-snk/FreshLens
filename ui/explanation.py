@@ -171,7 +171,7 @@ def _gradcam_status() -> None:
             st.image(
                 str(image_path),
                 caption="Input image",
-                use_container_width=True,
+                width="stretch",
             )
         else:
             st.warning("Không tìm thấy ảnh đầu vào.")
@@ -183,7 +183,7 @@ def _gradcam_status() -> None:
             st.image(
                 str(gradcam_path),
                 caption="Grad-CAM visualization",
-                use_container_width=True,
+                width="stretch",
             )
         else:
             st.warning("Không tìm thấy ảnh Grad-CAM.")
@@ -506,4 +506,3 @@ def _render_styles() -> None:
 """,
         unsafe_allow_html=True,
     )
-

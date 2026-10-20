@@ -197,7 +197,7 @@ def _line_chart(
         st.info(f"Dữ liệu cho {title} chưa có.")
         return
 
-    
+
     chart_df = history[[epoch, *columns]].copy()
     chart_df = chart_df.rename(columns={epoch: "Epoch"})
     chart_df = chart_df.melt(
@@ -289,7 +289,7 @@ def _render_per_class_f1(metrics: dict[str, Any]) -> None:
     df = pd.DataFrame(rows).sort_values("F1", ascending=True)
     chart_df = df.set_index("Class")[["F1"]]
 
-    
+
     chart = (
         alt.Chart(chart_df.reset_index())
         .mark_bar(
@@ -333,7 +333,7 @@ def _render_external_benchmark(external: dict[str, Any] | None) -> None:
         {"Metric": list(values.keys()), "Value": list(values.values())}
     ).set_index("Metric")
 
-    
+
     chart = (
         alt.Chart(df.reset_index())
         .mark_bar(
