@@ -1,0 +1,16 @@
+
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.git/
+.vscode/
+.pytest_cache/
+.mypy_cache/
+.streamlit/secrets.toml
+.env
+.env.*
+!.env.example
+.aws/
+logs/
+backups/

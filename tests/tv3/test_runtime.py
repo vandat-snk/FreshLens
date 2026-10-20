@@ -1,8 +1,4 @@
-"""TV3 contract tests. Synthetic inputs validate code, not fruit accuracy.
-
-This version selects Streamlit controls by their meaning instead of their
-index, so the Nhi UI can add a clear-image button without breaking TV3 tests.
-"""
+"""TV3 contract tests. Synthetic inputs validate code, not fruit accuracy."""
 import csv
 import io
 import json
@@ -71,10 +67,8 @@ def test_runtime_errors_are_not_silent(runtime, monkeypatch):
         runtime.predict(b'', use_tta=True)
     with pytest.raises(Exception):
         runtime.predict(b'invalid image')
-
     def broken(*args):
         raise ValueError('gate inference failed')
-
     monkeypatch.setattr('freshlens_ai.inference.cnn_predict.analyze_bytes', broken)
     with pytest.raises(ValueError, match='gate inference failed'):
         runtime.predict(encoded(Image.new('RGB', (100, 100))))
@@ -134,11 +128,9 @@ def test_gradcam_uses_fruit_first_and_removes_hooks():
         def __init__(self):
             super().__init__()
             self.features = torch.nn.Conv2d(3, 1, 1)
-
         def forward(self, tensor):
             feature = self.features(tensor).mean((1, 2, 3))[:, None]
             return feature + torch.tensor([.30, .25, .35, .01, .03, .02, .02, .02]).log()
-
     model = Toy()
     hooks = len(model.features._forward_hooks)
     with GradCAM(model, model.features) as cam:
@@ -179,44 +171,117 @@ def test_quality_configuration_validation():
         QualityConfig(dark_threshold=230, bright_threshold=200)
 
 
+def uploaded_file(data):
+    """Match the relevant Streamlit UploadedFile interface, including name."""
+    uploaded = io.BytesIO(data)
+    uploaded.name = 'test-photo.png'
+    uploaded.size = len(data)
+    uploaded.type = 'image/png'
+    return uploaded
+
+
 def analyze_button(app):
-    """Locate the Analyze button, not Nhi's new clear-image '×' button."""
     matching = [button for button in app.button if button.label == 'Phân tích ảnh']
-    assert len(matching) == 1, (
-        'Expected one Analyze button; found: '
-        + repr([button.label for button in app.button])
-    )
+    assert len(matching) == 1, repr([button.label for button in app.button])
     return matching[0]
+
+
+def test_diagnosis_default_sidebar():
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_string(
+        'from ui.diagnosis import render_diagnosis_page\n'
+        'render_diagnosis_page(object())'
+    ).run()
+    assert not app.exception
+    assert any('FreshLens' in block.value for block in app.sidebar.markdown)
+
+
+@pytest.mark.parametrize('contents', [None, '{invalid', '{}'])
+def test_app_quality_config_error_does_not_load_model(tmp_path, monkeypatch, contents):
+    from streamlit.testing.v1 import AppTest
+    from unittest.mock import Mock
+    config = tmp_path / 'quality.json'
+    if contents is not None:
+        config.write_text(contents)
+    monkeypatch.setenv('FRESHLENS_QUALITY_CONFIG', str(config))
+    factory = Mock(side_effect=AssertionError('Model must not load with invalid config'))
+    monkeypatch.setattr('freshlens_ai.inference.cnn_predict.FreshLensPredictor', factory)
+    app = AppTest.from_file(str(PROJECT_DIR / 'APP_CNN_V2.py')).run()
+    assert not app.exception
+    assert any('cấu hình kiểm tra chất lượng' in error.value for error in app.error)
+    assert any(str(config) in caption.value for caption in app.caption)
+    assert not app.code
+    factory.assert_not_called()
+
+
+def test_app_runtime_cache_evicts_old_quality_config(tmp_path, monkeypatch):
+    from dataclasses import asdict
+    from unittest.mock import Mock
+    import streamlit as st
+    from streamlit.testing.v1 import AppTest
+    config = tmp_path / 'quality.json'
+    monkeypatch.setenv('FRESHLENS_QUALITY_CONFIG', str(config))
+    factory = Mock(side_effect=lambda *a, **kw: object())
+    monkeypatch.setattr('freshlens_ai.inference.cnn_predict.FreshLensPredictor', factory)
+    st.cache_resource.clear()
+    try:
+        config.write_text(json.dumps(asdict(QualityConfig(blur_threshold=100))))
+        app = AppTest.from_file(str(PROJECT_DIR / 'APP_CNN_V2.py')).run()
+        assert not app.exception
+        app.run()
+        assert factory.call_count == 1  # Unchanged config reuses its model.
+        for threshold in (101, 100):
+            config.write_text(json.dumps(asdict(QualityConfig(blur_threshold=threshold))))
+            app.run()
+            assert not app.exception
+        assert factory.call_count == 3  # Returning to 100 reloads the evicted model.
+    finally:
+        st.cache_resource.clear()
 
 
 def test_streamlit_analysis_and_state_reset(runtime, monkeypatch):
     import streamlit as st
     from streamlit.testing.v1 import AppTest
+    from unittest.mock import Mock
     upload = [encoded(Image.new('RGB', (50, 50), 'black'))]
-    monkeypatch.setattr(st, 'file_uploader', lambda *args, **kwargs: io.BytesIO(upload[0]))
+    monkeypatch.setattr(st, 'file_uploader', lambda *args, **kwargs: uploaded_file(upload[0]))
     monkeypatch.setattr('freshlens_ai.inference.cnn_predict.FreshLensPredictor', lambda *a, **kw: runtime)
+    spy = Mock(wraps=runtime.predict)
+    monkeypatch.setattr(runtime, 'predict', spy)
+    st.cache_resource.clear()
     app = AppTest.from_file(str(PROJECT_DIR / 'APP_CNN_V2.py'), default_timeout=30).run()
     assert not app.exception
+    assert not app.checkbox  # Nhi policy: quality is always enabled, no toggle.
+    assert any(button.label == '×' for button in app.button)
     analyze_button(app).click().run()
     assert not app.exception
-    assert app.session_state['last_result']['status'] == 'openset_rejection'
-    app.checkbox[0].check().run()
-    assert 'last_result' not in app.session_state
-    analyze_button(app).click().run()
-    assert not app.exception
+    assert spy.call_args.kwargs['check_quality'] is True
+    assert app.session_state['current_image_bytes'] == upload[0]
     assert app.session_state['last_result']['status'] == 'quality_rejection'
-    # The warning title is styled Markdown; st.warning contains the reason only.
     assert app.warning
     assert any('Ảnh chưa đạt chất lượng' in block.value for block in app.markdown)
-    upload[0] = encoded(Image.new('RGB', (50, 50), 'white'))
+
+    # A good-quality input continues through the CNN/gate, not unconditional rejection.
+    noise = np.random.default_rng(42).integers(0, 256, (160, 160, 3), dtype=np.uint8)
+    upload[0] = encoded(Image.fromarray(noise))
     app.run()
     assert 'last_result' not in app.session_state
-    assert not app.warning  # The previous image's quality warning is hidden.
+    assert not app.warning
+    analyze_button(app).click().run()
+    assert not app.exception
+    result = app.session_state['last_result']
+    assert result['quality']['passed']
+    assert result['quality_enabled'] is True
+    assert result['status'] in ('accepted', 'openset_rejection')
+    assert spy.call_args.kwargs['check_quality'] is True
+
     upload[0] = b'broken image'
     app.run()
+    analyze_button(app).click().run()
     assert not app.exception
     assert app.error
     assert 'last_result' not in app.session_state
+    st.cache_resource.clear()
 
 
 @pytest.mark.parametrize('field,value', [
@@ -275,12 +340,10 @@ def test_quality_config_shared_by_cli_evaluator_and_app(runtime, tmp_path, monke
     manifest = tmp_path / 'manifest.csv'
     manifest.write_text('path,fruit,status,split\nphoto.png,apple,fresh,dev\n')
     observed = []
-
     def factory(*args, **kwargs):
         observed.append(kwargs['quality_config'])
         monkeypatch.setattr(runtime, 'quality_config', kwargs['quality_config'])
         return runtime
-
     monkeypatch.setattr(cli, 'FreshLensPredictor', factory)
     monkeypatch.setattr(evaluator, 'FreshLensPredictor', factory)
     result = cli.run(cli.build_parser().parse_args([
@@ -295,19 +358,18 @@ def test_quality_config_shared_by_cli_evaluator_and_app(runtime, tmp_path, monke
     assert report['quality_config_sha256'] == result['quality_config_sha256'] == quality_config_hash(custom)
     monkeypatch.setenv('FRESHLENS_QUALITY_CONFIG', str(saved))
     monkeypatch.setattr('freshlens_ai.inference.cnn_predict.FreshLensPredictor', factory)
-    monkeypatch.setattr(st, 'file_uploader', lambda *a, **kw: io.BytesIO(photo.read_bytes()))
+    monkeypatch.setattr(st, 'file_uploader', lambda *a, **kw: uploaded_file(photo.read_bytes()))
     st.cache_resource.clear()
     app = AppTest.from_file(str(PROJECT_DIR/'APP_CNN_V2.py'), default_timeout=30).run()
     assert not app.exception
-    app.checkbox[0].check().run()
-    assert not app.exception
+    assert not app.checkbox
     analyze_button(app).click().run()
     assert not app.exception
     assert app.session_state['last_result']['quality_config_sha256'] == result['quality_config_sha256']
     # Editing the config resets the existing result on the next Streamlit rerun.
-    saved.write_text(json.dumps(asdict(QualityConfig())))
+    config_path = saved
+    config_path.write_text(json.dumps(asdict(QualityConfig())))
     app.run()
-    assert not app.exception
     assert 'last_result' not in app.session_state
     assert observed[:3] == [custom, custom, custom]
     st.cache_resource.clear()

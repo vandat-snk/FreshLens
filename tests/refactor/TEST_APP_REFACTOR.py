@@ -85,12 +85,11 @@ def _verify_app(tree: ast.Module) -> None:
                           "render_evaluation_page", "render_explanation_page",
                           "render_about_page", "FreshLensPredictor",
                           "load_quality_config", "quality_config_hash",
-                          "clear_result", "st.sidebar.checkbox"), APP)
+                          "clear_result"), APP)
     entry = next(_calls(tree, "render_diagnosis_page"))
     kwargs = {k.arg: k.value for k in entry.keywords}
     assert isinstance(kwargs.get("predictor"), ast.Name), "Pass runtime predictor to diagnosis"
-    assert isinstance(kwargs.get("check_quality"), ast.Name), "Pass quality policy to diagnosis"
-    assert kwargs["check_quality"].id == "quality_enabled", "Quality policy must follow checkbox"
+    assert not list(_calls(tree, "st.sidebar.checkbox")), "Nhi UI must keep quality always enabled"
     assert any(isinstance(x, ast.Constant) and x.value == "FRESHLENS_QUALITY_CONFIG" for x in ast.walk(tree)), \
         "APP must honor custom quality config environment variable"
     for module in ["ui.about", "ui.diagnosis", "ui.evaluation", "ui.explanation"]:
@@ -103,17 +102,13 @@ def _verify_diagnosis(tree: ast.Module) -> None:
     _require_calls(tree, ("st.file_uploader", "st.camera_input", "result_for_image",
                           "store_result", "clear_result", "predictor.predict"), DIAGNOSIS)
     render = _require_function(tree, "render_diagnosis_page")
-    renderer_args = [x.arg for x in render.args.args]
-    assert "check_quality" in renderer_args, "UI renderer must receive quality policy"
     result_panel = _require_function(tree, "_render_result_panel")
-    assert "check_quality" in [x.arg for x in result_panel.args.args]
     analyze = _require_function(tree, "_analyze_current_image")
-    assert "check_quality" in [x.arg for x in analyze.args.args]
     predict_calls = list(_calls(analyze, "predictor.predict"))
     assert len(predict_calls) == 1, "Expect exactly one predictor call in analyze handler"
     kwargs = {k.arg: k.value for k in predict_calls[0].keywords}
-    assert isinstance(kwargs.get("check_quality"), ast.Name) and kwargs["check_quality"].id == "check_quality", \
-        "Diagnosis must pass the checkbox policy to runtime.predict()"
+    assert isinstance(kwargs.get("check_quality"), ast.Constant) and kwargs["check_quality"].value is True, \
+        "Nhi diagnosis must always request quality checking"
     assert any(_calls(result_panel, "_analyze_current_image")), "Analysis button must use handler"
     assert any(_calls(render, "_render_result_panel")), "Diagnosis page must show results"
     print("[OK] Diagnosis connects upload/camera, analysis and quality policy")
