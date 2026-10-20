@@ -1,0 +1,14 @@
+[
+  {
+    "id": "camera_v1",
+    "kind": "supported",
+    "root": "data/camera_v1",
+    "metadata": "docs/dataset_v2/camera_metadata.csv"
+  },
+  {
+    "id": "other",
+    "kind": "other",
+    "root": "data/other",
+    "metadata": "docs/dataset_v2/other_metadata.csv"
+  }
+]
