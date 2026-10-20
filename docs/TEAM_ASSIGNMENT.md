@@ -1,33 +1,23 @@
-# Phân công bốn thành viên FreshLens
+# Phân công FreshLens CNN
 
-## TV1 — Dữ liệu và tiền xử lý
+Căn cứ: tài liệu phân công nâng cấp bốn thành viên và bộ slide 20 phút.
 
-Phụ trách `legacy/svm/src/dataset.py`, `legacy/svm/src/check_dataset.py`, `legacy/svm/src/image_processing.py` và phần đường dẫn trong `legacy/svm/src/config.py`.
+| Thành viên | Vai trò | Module chính | Slide |
+| --- | --- | --- | --- |
+| Lương Thị Như Huỳnh — N23DCCN096 | TV1 dữ liệu và xử lý ảnh | freshlens_ai/data, inference/quality.py, PREPARE_CAMERA_MANIFEST.py | 01–07 |
+| Võ Văn Đạt — N23DCCN078 | TV2 huấn luyện CNN | models, training, TRAIN_CNN_V2.py, BENCHMARK_MODELS.py | 08–13 |
+| Hứa Như Quỳnh — N23DCCN118 | TV3 suy luận và đánh giá | inference, evaluation, EVALUATE_TV3.py, Grad-CAM | 14–20 |
+| Nguyễn Thị Yến Nhi — N23DCCN112 | TV4 giao diện và tích hợp | ui, APP_CNN_V2.py, launcher, cài đặt, QA và tài liệu | 21–26 |
 
-Bàn giao: manifest có `path, fruit, status, source, group_id, sha256, split`; thống kê 8 tổ hợp loại × tình trạng; ảnh `other`; bảng lỗi/ảnh loại; bằng chứng ảnh xám, PNG alpha, EXIF, đường dẫn Unicode; so sánh bật/tắt CLAHE/Gaussian.
+Slide 27–29 là phụ lục. SVM trong legacy/svm chỉ là lịch sử/baseline.
+Phân công là trách nhiệm kiểm tra và bàn giao, không tự chứng nhận thí nghiệm đã hoàn thành.
 
-## TV2 — Đặc trưng và thí nghiệm xử lý ảnh
+## Bàn giao
 
-Phụ trách `legacy/svm/src/features.py`.
+- Huỳnh: nhãn ảnh camera, group theo quả vật lý, nguồn ảnh, báo cáo trùng, ảnh trước/sau tiền xử lý; tách dev/calibration/final.
+- Đạt: cấu hình, seed, checkpoint/hash, learning curves; chỉ công bố nâng cấp tốt hơn sau khi so cùng protocol. Candidate multi-task và resolution mới là thí nghiệm, chưa là production.
+- Quỳnh: JSON/CSV/CM, error gallery, coverage/FAR, quality và latency. External V2 đã calibration không phải final test độc lập.
+- Nhi: bốn trang chạy được, đổi ảnh xóa kết quả và heatmap, ảnh lỗi không crash, CPU fallback, cài mới, demo upload và camera thật.
 
-Bàn giao: giải thích vector màu 132, texture 21, shape 12, HOG 6.084; thứ tự vector cố định; minh họa histogram, LBP, Canny, gradient; bảng ablation cùng một manifest và mã lần chạy. Không gọi Canny/HOG/LBP là vùng hỏng hoặc vùng mô hình chú ý.
-
-## TV3 — Huấn luyện và quyết định nhận dạng
-
-Phụ trách `legacy/svm/src/model.py`, `legacy/svm/src/train.py`, `legacy/svm/src/predict.py` và requirements.
-
-Bàn giao: baseline/candidate; scaler trong pipeline; SVM linear/RBF; chọn tham số trên fold giữ nhóm; lớp `other`; ngưỡng xác suất + margin chọn trên validation; artifact lưu model, classes, feature order, preprocessing, threshold, run_id, version; không suy diễn status khi fruit bị từ chối.
-
-## TV4 — Giao diện, nghiệp vụ và đánh giá độc lập
-
-Phụ trách `legacy/svm/src/app.py`, `legacy/svm/src/metrics.py`, `legacy/svm/tests/` và tổng hợp demo.
-
-Bàn giao: upload/camera; trạng thái thiếu model/chưa có ảnh/đang xử lý/chấp nhận/chưa đủ tin cậy/ngoài phạm vi/tệp lỗi; JSON khớp kết quả; confusion matrix, precision/recall/F1, macro-F1, coverage, accuracy trên phần được nhận, false acceptance rate; test ảnh thuận lợi, ảnh khó, ảnh ngoài phạm vi và ảnh nhiều vật thể.
-
-## Kiểm tra chéo
-
-* Vòng 1: TV1 ↔ TV2; TV3 ↔ TV4.
-* Vòng 2: TV1 ↔ TV3; TV2 ↔ TV4.
-* Mỗi người phải chạy được toàn bộ pipeline và giải thích một ca đúng, một ca sai, một ca bị từ chối.
-* Nếu chưa đo một trường hợp, nói rõ chưa đo và nêu thí nghiệm sẽ dùng; không lấy ảnh hình học hoặc demo tổng hợp để tuyên bố accuracy ảnh đời thực.
-
+Mỗi người kiểm tra công thức và giáo trình thuộc phần mình. Nhi tổng hợp báo cáo;
+cả nhóm xác nhận bằng chứng. Xem docs/SUBMISSION.md để chạy lại công cụ.

@@ -64,6 +64,7 @@ def render_evaluation_page() -> None:
     _render_confusion_matrix(metrics)
     _render_per_class_f1(metrics)
     _render_external_benchmark(artifacts["external"])
+    _render_policy_report()
 
     if artifacts["errors"] is not None:
         st.caption(f"Validation errors: {len(artifacts['errors']):,}")
@@ -312,7 +313,8 @@ def _render_per_class_f1(metrics: dict[str, Any]) -> None:
 
 
 def _render_external_benchmark(external: dict[str, Any] | None) -> None:
-    st.subheader("External Benchmark")
+    st.subheader("Bộ minh họa tám ảnh đã lưu")
+    st.caption('eval_results/metrics.json là báo cáo minh họa nhỏ; không phải final test độc lập và không dùng để kết luận accuracy camera.')
 
     if not isinstance(external, dict) or not external:
         st.info("Chưa có dữ liệu benchmark độc lập.")
@@ -321,7 +323,12 @@ def _render_external_benchmark(external: dict[str, Any] | None) -> None:
         )
         return
 
-    values = _extract_numeric_metrics(external)
+    values = {}
+    if isinstance(external.get('accuracy'), (int, float)):
+        values['Joint accuracy'] = external['accuracy']
+    macro = external.get('macro avg', {})
+    if isinstance(macro, dict) and isinstance(macro.get('f1-score'), (int, float)):
+        values['Macro F1'] = macro['f1-score']
 
     if not values:
         st.info(
@@ -350,6 +357,24 @@ def _render_external_benchmark(external: dict[str, Any] | None) -> None:
 
     st.altair_chart(chart, width="stretch")
 
+
+
+def _render_policy_report():
+    report = _read_json(PROJECT_DIR/'eval_results/submission_external_v2_cpu/run/metrics.json')
+    st.subheader('Kiểm tra lại chính sách trên External V2')
+    st.caption('Bộ ảnh đã dùng hiệu chuẩn gate. Đây là kiểm tra lại calibration, không phải final test hay ảnh camera mới.')
+    if not report:
+        st.info('Chưa có report kiểm tra lại; dùng EVALUATE_TV3.py theo hướng dẫn bàn giao.')
+        return
+    metrics = report['metrics']
+    st.write(f"Known: {metrics['total_known']} ảnh; unknown: {metrics['total_unknown']} ảnh; thiết bị: {report['device']}.")
+    policy = metrics['policy']
+    columns = st.columns(3)
+    columns[0].metric('Coverage known', _fmt_percent(policy['known_coverage']))
+    columns[1].metric('Thành công đầu cuối', _fmt_percent(policy['end_to_end_joint_success']))
+    columns[2].metric('Nhận nhầm unknown', _fmt_percent(policy['unknown_false_acceptance_rate']))
+    st.write('Latency sau warm-up:', metrics['latency'])
+    st.caption('Ngưỡng quality đang là thử nghiệm; từ chối ảnh tốt vẫn được tính trong mẫu số end-to-end.')
 
 
 def _extract_numeric_metrics(

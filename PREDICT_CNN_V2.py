@@ -30,7 +30,8 @@ def run(args):
 
 def main():
     try:
-        print(json.dumps(run(build_parser().parse_args()), ensure_ascii=False, indent=2))
+        # ASCII JSON escapes are lossless and portable to Windows code pages.
+        print(json.dumps(run(build_parser().parse_args()), ensure_ascii=True, indent=2))
     except Exception as exc:
         print(f'[ERROR] {type(exc).__name__}: {exc}')
         return 1

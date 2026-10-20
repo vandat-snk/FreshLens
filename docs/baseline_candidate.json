@@ -1,0 +1,8 @@
+[
+  {
+    "name": "production_baseline",
+    "checkpoint": "../models/cnn_efficientnet_b0/best.pt",
+    "gate_npz": "../models/cnn_efficientnet_b0/open_set_gate.npz",
+    "gate_meta": "../models/cnn_efficientnet_b0/open_set_gate.json"
+  }
+]

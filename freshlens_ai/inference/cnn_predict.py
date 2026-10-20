@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import time
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -47,8 +48,36 @@ class FreshLensPredictor:
         # A missing or incompatible gate is a startup error, never an implicit accept.
         self.openset_gate = load_gate(gate_path, meta_path, model_path)
         self.quality_config = quality_config if quality_config is not None else load_quality_config()
+        # Streamlit shares this model between sessions. Hooks and forwards must
+        # never overlap while generating an explanation.
+        self._model_lock = threading.RLock()
 
     def predict(self, image_input, use_tta=False, check_quality=False):
+        with self._model_lock:
+            return self._predict(image_input, use_tta, check_quality)
+
+    def explain(self, image_input):
+        """Explain this exact image on the production letterbox canvas."""
+        from freshlens_ai.data import image_transform
+        from freshlens_ai.data.transforms import Letterbox
+        from freshlens_ai.inference.gradcam import GradCAM, overlay_heatmap
+        from freshlens_ai.utils.file_io import sha256_bytes
+
+        data = image_bytes(image_input)
+        image = rgb_from_bytes(data)
+        tensor = image_transform(training=False)(image).unsqueeze(0).to(self.device)
+        with self._model_lock:
+            with GradCAM(self.model, self.model.features[-1]) as cam:
+                heatmap, index = cam.generate_heatmap(tensor)
+        canvas = np.asarray(Letterbox()(image))
+        return dict(
+            original=canvas, overlay=overlay_heatmap(heatmap, canvas),
+            heatmap=heatmap, target_class=CLASSES[index],
+            target_layer='features[-1]', image_sha256=sha256_bytes(data),
+            note='Grad-CAM explains the raw CNN class, not gate acceptance or damage segmentation.',
+        )
+
+    def _predict(self, image_input, use_tta=False, check_quality=False):
         if use_tta:
             raise ValueError('TTA is not validated with the production gate. Use use_tta=False.')
         if self.device.type == 'cuda':

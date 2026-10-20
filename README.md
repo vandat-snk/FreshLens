@@ -625,3 +625,19 @@ After the repository cleanup is complete, future work should be done as new cont
 ---
 
 **Production baseline:** EfficientNet-B0 CNN V2 + fruit-first decoding + calibrated open-set support gate.
+
+## Bản bàn giao và chạy nhanh trên Windows
+
+Mở `RUN_FRESHLENS.bat` (cần Python 3.13 và Internet khi cài lần đầu).
+Script tạo môi trường CPU nếu chưa có, kiểm tra runtime rồi mở app.
+NVIDIA: chạy `powershell -File SETUP_FRESHLENS.ps1 -Device cu128` trước.
+
+- Grad-CAM trực tiếp cho ảnh vừa phân tích, xuất PNG và kết quả JSON tại trang Chẩn đoán.
+- Kiểm tra ảnh lỗi trước preview, reset cả kết quả và heatmap khi thay ảnh.
+- Công cụ dữ liệu camera: `PREPARE_CAMERA_MANIFEST.py`.
+- So sánh checkpoint/gate đã huấn luyện: `BENCHMARK_MODELS.py`.
+- Hướng dẫn bàn giao và giới hạn bằng chứng: [docs/SUBMISSION.md](docs/SUBMISSION.md).
+- Phân công nhóm hiện tại: [docs/TEAM_ASSIGNMENT.md](docs/TEAM_ASSIGNMENT.md).
+
+CPU-only có thể cài `requirements-torch-cpu.txt` thay cho bản CUDA.
+Phiên bản UI yêu cầu Streamlit >= 1.57. Không cần tài khoản cloud để chạy nhận dạng.

@@ -1,0 +1,390 @@
+{
+  "split": "calibration_recheck",
+  "device": "cpu",
+  "checkpoint_epoch": 9,
+  "checkpoint_sha256": "134c2555f7b018012565886e54f7a30e99dd4c07b00284b9b57c37e1d50f9bf4",
+  "gate_npz_sha256": "55a43a20f0caf0162b36e63ae8eaa9a0c70520cf9113cd8e0898668b3c307b0a",
+  "gate_meta_sha256": "2f8337028e01085e522622e9e6b95282e37986cb7ed9c599f0321c55dc5bf616",
+  "manifest_sha256": "3372ebfb0d758f3934a52080a03696abe723296dc1dd0ee382e6300a0ab67089",
+  "quality_enabled": true,
+  "quality_config": {
+    "min_size": 100,
+    "blur_threshold": 100.0,
+    "dark_threshold": 40.0,
+    "bright_threshold": 215.0
+  },
+  "quality_config_sha256": "16d06385d4b75b6b171af96f2780b3774a899b457e3b9a10c3ee92b8a3456fe1",
+  "tta_enabled": false,
+  "independent_final_test_verified": false,
+  "dataset_note": "Split name does not establish independence. No threshold is fitted by this evaluator.",
+  "selected_images_without_manifest_hash": 0,
+  "selected_images_without_group": 103,
+  "metrics": {
+    "total_images": 103,
+    "total_known": 81,
+    "total_unknown": 22,
+    "cnn_only": {
+      "joint": {
+        "accuracy": 0.9259259259259259,
+        "macro_f1": 0.9244636211741475,
+        "balanced_accuracy": 0.9261363636363636,
+        "labels": [
+          "apple::fresh",
+          "apple::rotten",
+          "banana::fresh",
+          "banana::rotten",
+          "orange::fresh",
+          "orange::rotten",
+          "tomato::fresh",
+          "tomato::rotten"
+        ],
+        "confusion_matrix": [
+          [
+            7,
+            1,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            9,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            10,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            10,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            9,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            10,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            10,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            10
+          ]
+        ],
+        "per_class": {
+          "apple::fresh": {
+            "precision": 0.875,
+            "recall": 0.7,
+            "f1": 0.7777777777777778,
+            "support": 10
+          },
+          "apple::rotten": {
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "support": 10
+          },
+          "banana::fresh": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 10
+          },
+          "banana::rotten": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 10
+          },
+          "orange::fresh": {
+            "precision": 1.0,
+            "recall": 0.9,
+            "f1": 0.9473684210526315,
+            "support": 10
+          },
+          "orange::rotten": {
+            "precision": 0.8333333333333334,
+            "recall": 1.0,
+            "f1": 0.9090909090909091,
+            "support": 10
+          },
+          "tomato::fresh": {
+            "precision": 0.8333333333333334,
+            "recall": 1.0,
+            "f1": 0.9090909090909091,
+            "support": 10
+          },
+          "tomato::rotten": {
+            "precision": 1.0,
+            "recall": 0.9090909090909091,
+            "f1": 0.9523809523809523,
+            "support": 11
+          }
+        }
+      },
+      "fruit": {
+        "accuracy": 0.9753086419753086,
+        "macro_f1": 0.974930590799176,
+        "balanced_accuracy": 0.975,
+        "labels": [
+          "apple",
+          "banana",
+          "orange",
+          "tomato"
+        ],
+        "confusion_matrix": [
+          [
+            18,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            20,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            20,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            21
+          ]
+        ],
+        "per_class": {
+          "apple": {
+            "precision": 1.0,
+            "recall": 0.9,
+            "f1": 0.9473684210526315,
+            "support": 20
+          },
+          "banana": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 20
+          },
+          "orange": {
+            "precision": 0.9523809523809523,
+            "recall": 1.0,
+            "f1": 0.975609756097561,
+            "support": 20
+          },
+          "tomato": {
+            "precision": 0.9545454545454546,
+            "recall": 1.0,
+            "f1": 0.9767441860465116,
+            "support": 21
+          }
+        }
+      },
+      "condition": {
+        "accuracy": 0.9382716049382716,
+        "macro_f1": 0.938233948452036,
+        "balanced_accuracy": 0.938109756097561,
+        "labels": [
+          "fresh",
+          "rotten"
+        ],
+        "confusion_matrix": [
+          [
+            37,
+            3
+          ],
+          [
+            2,
+            39
+          ]
+        ],
+        "per_class": {
+          "fresh": {
+            "precision": 0.9487179487179487,
+            "recall": 0.925,
+            "f1": 0.9367088607594937,
+            "support": 40
+          },
+          "rotten": {
+            "precision": 0.9285714285714286,
+            "recall": 0.9512195121951219,
+            "f1": 0.9397590361445783,
+            "support": 41
+          }
+        }
+      }
+    },
+    "policy": {
+      "known_accepted": 53,
+      "known_rejected": 28,
+      "known_coverage": 0.654320987654321,
+      "known_quality_rejected": 25,
+      "known_openset_rejected": 3,
+      "end_to_end_fruit_success": 0.654320987654321,
+      "end_to_end_joint_success": 0.6296296296296297,
+      "accepted_only_joint_accuracy": 0.9622641509433962,
+      "unknown_false_acceptance_rate": 0.0,
+      "unknown_rejection_rate": 1.0,
+      "unknown_false_accepted": 0,
+      "unknown_rejected": 22
+    },
+    "gate_only": {
+      "known_acceptance": 0.9506172839506173,
+      "unknown_rejection": 1.0,
+      "known_joint_outcomes": {
+        "cnn_correct_gate_accept": 73,
+        "cnn_correct_gate_reject": 2,
+        "cnn_wrong_gate_accept": 4,
+        "cnn_wrong_gate_reject": 2
+      }
+    },
+    "quality_diagnostic": {
+      "good_labeled": 0,
+      "bad_labeled": 0,
+      "good_false_rejection_rate": null,
+      "bad_rejection_rate": null
+    },
+    "calibration": {
+      "joint_ece_10_bins": 0.07176899174113333,
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "count": 0,
+          "accuracy": null,
+          "mean_confidence": null
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "count": 0,
+          "accuracy": null,
+          "mean_confidence": null
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "count": 0,
+          "accuracy": null,
+          "mean_confidence": null
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "count": 0,
+          "accuracy": null,
+          "mean_confidence": null
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "count": 5,
+          "accuracy": 0.4,
+          "mean_confidence": 0.45439486503601073
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "count": 2,
+          "accuracy": 1.0,
+          "mean_confidence": 0.5685028433799744
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "count": 3,
+          "accuracy": 0.6666666666666666,
+          "mean_confidence": 0.637864887714386
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "count": 9,
+          "accuracy": 0.7777777777777778,
+          "mean_confidence": 0.7712895936436124
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "count": 18,
+          "accuracy": 1.0,
+          "mean_confidence": 0.871645622783237
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "count": 44,
+          "accuracy": 1.0,
+          "mean_confidence": 0.9494740475307811
+        }
+      ]
+    },
+    "latency": {
+      "mean_ms": 89.35382038837648,
+      "p95_ms": 133.62671999993836
+    },
+    "definitions": {
+      "cnn_only": "All decoded known images, including gate/quality rejections.",
+      "policy": "Quality rejection takes precedence over gate rejection when enabled.",
+      "macro_f1": "Unweighted average over the fixed supported class list, absent classes count as zero.",
+      "balanced_accuracy": "Mean recall of classes with ground-truth support.",
+      "missing_denominator": "Rates are null when the required population is absent.",
+      "quality_diagnostic": "Measured before resizing; human good/bad labels are optional. Thresholds are experimental.",
+      "latency": "Decode, quality measurements and full CNN/gate inference; one warm-up excluded, CUDA synchronized."
+    }
+  }
+}

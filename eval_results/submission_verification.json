@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-20",
+  "python": "3.13.7",
+  "torch": "2.10.0+cu128",
+  "torchvision": "0.25.0+cu128",
+  "streamlit": "1.65.0",
+  "checkpoint_sha256": "134c2555f7b018012565886e54f7a30e99dd4c07b00284b9b57c37e1d50f9bf4",
+  "gate_npz_sha256": "55a43a20f0caf0162b36e63ae8eaa9a0c70520cf9113cd8e0898668b3c307b0a",
+  "gate_meta_sha256": "2f8337028e01085e522622e9e6b95282e37986cb7ed9c599f0321c55dc5bf616",
+  "quality_config_sha256": "6c1b8e8e231520d6f51ad72794d280ce647df4d5ad07a4041f99ace2bc2b7cb2",
+  "checks": {
+    "runtime_and_data": "100 passed",
+    "submission_after_final_ui_change": "13 passed",
+    "full_refactor_integration": "passed against original image root",
+    "benchmark_runner": "passed with production baseline on 103 calibration images",
+    "dependency_consistency": "pip check passed",
+    "camera_hardware": "not performed",
+    "fresh_machine_install": "not performed locally; workflow configured",
+    "docker_build": "not performed"
+  },
+  "independent_camera_kpi_verified": false
+}

@@ -1,0 +1,6 @@
+{
+  "min_size": 100,
+  "blur_threshold": 100.0,
+  "dark_threshold": 40.0,
+  "bright_threshold": 215.0
+}

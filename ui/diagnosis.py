@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import html
 import time
+import io
+import json
 from typing import Any
 
 import streamlit as st
 
 from freshlens_ai.inference import clear_result, result_for_image, store_result
+from freshlens_ai.data import rgb_from_bytes
 from freshlens_ai.utils.file_io import sha256_bytes
 
 
@@ -830,6 +833,34 @@ def _render_result_panel(image_bytes, image_meta, predictor) -> None:
     else:
         _render_openset_rejection(result)
 
+    _render_image_explanation(image_bytes, predictor)
+    st.download_button(
+        'Tải kết quả JSON',
+        data=json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False),
+        file_name='freshlens_result.json', mime='application/json',
+    )
+
+
+def _render_image_explanation(image_bytes, predictor):
+    with st.expander('Xem ảnh xử lý và Grad-CAM'):
+        st.caption('Grad-CAM giải thích dự đoán CNN; không phải ranh giới vùng hỏng và không xác nhận ảnh được chấp nhận.')
+        if st.button('Tạo Grad-CAM cho ảnh này', key='generate_image_explanation'):
+            try:
+                with st.spinner('Đang tạo bản đồ đóng góp...'):
+                    st.session_state['image_explanation'] = predictor.explain(image_bytes)
+            except Exception as exc:
+                st.session_state.pop('image_explanation', None)
+                st.error(f'Không tạo được Grad-CAM: {exc}')
+        explanation = st.session_state.get('image_explanation')
+        if explanation and explanation['image_sha256'] == sha256_bytes(image_bytes):
+            left, right = st.columns(2)
+            left.image(explanation['original'], caption='Đầu vào RGB sau letterbox', width='stretch')
+            right.image(explanation['overlay'], caption=f"Grad-CAM: {explanation['target_class']}", width='stretch')
+            buffer = io.BytesIO()
+            from PIL import Image
+            Image.fromarray(explanation['overlay']).save(buffer, format='PNG')
+            st.download_button('Tải ảnh Grad-CAM', buffer.getvalue(), 'freshlens_gradcam.png', 'image/png')
+
 
 
 def _analyze_current_image(image_bytes, predictor) -> None:
@@ -977,6 +1008,12 @@ def _set_current_image(image_bytes: bytes, meta: dict[str, Any]) -> None:
     image_hash = sha256_bytes(image_bytes)
     if st.session_state.get("last_image_sha256_ui") != image_hash:
         clear_result(st.session_state)
+        try:
+            rgb_from_bytes(image_bytes)
+        except Exception as exc:
+            _remove_current_image(keep_source=True)
+            st.error(f'Không đọc được ảnh: {exc}')
+            return
         st.session_state.current_image_bytes = image_bytes
         st.session_state.current_image_meta = meta
         st.session_state.last_image_sha256_ui = image_hash
@@ -1049,4 +1086,6 @@ def _render_latency_caption(result: dict[str, Any]) -> None:
 def _image_base64(image_bytes: bytes) -> str:
     import base64
 
-    return base64.b64encode(image_bytes).decode("ascii")
+    buffer = io.BytesIO()
+    rgb_from_bytes(image_bytes).save(buffer, format='JPEG')
+    return base64.b64encode(buffer.getvalue()).decode("ascii")

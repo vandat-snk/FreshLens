@@ -255,20 +255,14 @@ def _team() -> None:
 
         st.markdown("### Thành viên thực hiện")
 
-        _team_member("Thành viên 1", "Data & Image Processing")
-        _team_member("Thành viên 2", "AI Training")
-        _team_member("Thành viên 3", "Inference & Evaluation")
-        _team_member("Thành viên 4", "UI, Integration, Cleanup & QA")
+        _team_member("N23DCCN096", "Lương Thị Như Huỳnh — Dữ liệu và xử lý ảnh")
+        _team_member("N23DCCN078", "Võ Văn Đạt — Huấn luyện CNN")
+        _team_member("N23DCCN118", "Hứa Như Quỳnh — Suy luận và đánh giá")
+        _team_member("N23DCCN112", "Nguyễn Thị Yến Nhi — Giao diện và tích hợp")
 
 
 def _team_member(code: str, role: str) -> None:
-    col1, col2 = st.columns([0.25, 1])
-
-    with col1:
-        st.markdown(f"**{code}**")
-
-    with col2:
-        st.markdown(role)
+    st.markdown(f"**{code}**  \n{role}")
 
 
 # ============================================================

@@ -171,3 +171,10 @@ Predictor vẫn lưu dự đoán CNN thô cho mục đích đánh giá, kể c�
 - Sidebar mặc định không còn truyền các biến chưa được định nghĩa; bỏ ba tham số không dùng của hàm render sidebar.
 - File quality thiếu, sai JSON hoặc ngưỡng không hợp lệ được báo riêng, xóa kết quả cũ và dừng trước khi tải model. Lỗi khởi tạo model/gate không còn gợi ý chạy ngay lệnh dựng gate dành riêng cho Windows/CUDA.
 - Sau bổ sung: 35 test TV3 và regression UI pass trên local CPU, gồm kiểm tra sidebar mặc định, cấu hình lỗi và loại runtime cũ khỏi cache. Chưa đo bộ nhớ trên GPU thực tế.
+
+## Live Grad-CAM trong bản bàn giao
+
+Trang Chẩn đoán tạo heatmap theo đúng ảnh hiện tại sau khi phân tích, tải PNG và JSON.
+Runtime khóa lượt forward/Grad-CAM khi dùng chung model giữa các session; hook được
+gỡ sau mỗi lần tạo. Đổi ảnh hoặc quality policy xóa cả kết quả và heatmap cũ.
+Ảnh AI demo cố định trên trang Giải thích được ghi rõ nguồn, không là camera test.

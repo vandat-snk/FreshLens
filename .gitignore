@@ -9,6 +9,9 @@ __pycache__/
 
 # Secrets
 /.env
+.env.*
+!.env.example
+.pytest_cache/
 
 # Local caches
 /.cache/

@@ -12,8 +12,8 @@ from freshlens_ai.constants import CLASSES
 from freshlens_ai.data.camera_dataset import (
     METADATA_COLUMNS, MANIFEST_COLUMNS, scan_camera, write_camera_inventory,
 )
-from freshlens_ai.data.dataset_audit import inspect_image
-from freshlens_ai.utils.file_io import file_sha256, write_csv
+from freshlens_ai.data.dataset_audit import inspect_image, SUPPORTED_COLUMNS, OTHER_COLUMNS, QUALITY_COLUMNS
+from freshlens_ai.utils.file_io import file_sha256, write_csv, atomic_json
 
 
 class CameraDatasetTests(unittest.TestCase):
@@ -153,9 +153,23 @@ class CameraDatasetTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"outside"):
                 write_camera_inventory(self.root,self.base/"baseline",output)
 
-    def test_live_v5_lock_and_bytes_unchanged_by_empty_scan(self):
+    def test_locked_baseline_bytes_unchanged_by_empty_scan(self):
         self.p1.stop(); self.p2.stop()
-        v5=Path(__file__).resolve().parents[1]/"data/cnn_dataset_v5"
+        # A real, hashed temporary baseline makes this check work on clean
+        # clones too; local V5 images are intentionally not shipped in Git.
+        v5=self.base/'locked_baseline'
+        v5.mkdir()
+        photo=self.base/'baseline.png'
+        Image.new('RGB',(120,100),'orange').save(photo)
+        row=dict(path='baseline.png',fruit='orange',status='fresh',source='fixture',
+                 group_id='fixture_001',sha256=file_sha256(photo),split='train')
+        write_csv(v5/'manifest.csv',[row],SUPPORTED_COLUMNS)
+        write_csv(v5/'other_manifest.csv',[],OTHER_COLUMNS)
+        write_csv(v5/'image_quality.csv',[inspect_image(self.base,row,fingerprints=True)],QUALITY_COLUMNS)
+        atomic_json(v5/'dataset_report.json',{})
+        atomic_json(v5/'dataset_lock.json',dict(schema_version='freshlens_dataset_v2_lock_1',
+            files={name:file_sha256(v5/name) for name in
+                   ('manifest.csv','other_manifest.csv','image_quality.csv','dataset_report.json')}))
         before={p.name:file_sha256(p) for p in v5.iterdir() if p.is_file()}
         rows,report=scan_camera(self.root,v5)
         self.assertEqual(rows,[])

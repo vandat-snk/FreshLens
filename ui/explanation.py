@@ -140,6 +140,7 @@ def _preprocessing() -> None:
 
 
 def _gradcam_status() -> None:
+    st.info('Để tạo Grad-CAM cho ảnh của bạn: vào Chẩn đoán, phân tích ảnh, mở “Xem ảnh xử lý và Grad-CAM”. Ảnh dưới đây là ví dụ cố định với đầu vào tổng hợp bằng AI, không phải ảnh camera kiểm thử.')
     project_root = Path(__file__).resolve().parents[1]
     image_path = project_root / "eval_results" / "fruit_input_ai_demo.png"
     gradcam_path = project_root / "eval_results" / "gradcam_fruit_ai_demo.png"

@@ -24,6 +24,7 @@ def clear_result(session_state) -> None:
     """Remove any previous analysis result."""
     session_state.pop(RESULT_KEY, None)
     session_state.pop(IMAGE_HASH_KEY, None)
+    session_state.pop('image_explanation', None)
 
 
 def result_for_image(session_state, image_bytes: bytes):

@@ -277,9 +277,10 @@ def test_streamlit_analysis_and_state_reset(runtime, monkeypatch):
 
     upload[0] = b'broken image'
     app.run()
-    analyze_button(app).click().run()
     assert not app.exception
     assert app.error
+    assert app.session_state['current_image_bytes'] is None
+    assert not any(button.label == 'Phân tích ảnh' for button in app.button)
     assert 'last_result' not in app.session_state
     st.cache_resource.clear()
 
